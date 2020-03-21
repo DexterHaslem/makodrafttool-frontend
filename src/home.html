@@ -1,4 +1,7 @@
 <template>
-
-  <div>home</div>
+  <div>Load a draft session with code</div>
+  <form submit.trigger="navCode()">
+    <input type="text" value.bind="inputCode">
+    <button type="submit">Go</button>
+  </form>
 </template>

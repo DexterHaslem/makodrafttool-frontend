@@ -1,6 +1,44 @@
 <template>
+  <style>
+    #links-div {
+
+    }
+
+    .draftcode {
+      width: 300px;
+    }
+  </style>
   <div>
-    <p>admin home</p>
+    <p>Create new draft</p>
+
+    <form submit.trigger="onCreate()" if.bind="!draftCreated">
+      <label>Draft name</label>
+      <input type="text" value.bind="draft.setup.name">
+
+      <label>Map</label>
+      <input type="text" value.bind="draft.setup.mapName">
+
+      <label>Blue team name</label>
+      <input type="text" value.bind="draft.setup.blueName">
+
+      <label>Red team name</label>
+      <input type="text" value.bind="draft.setup.redName">
+
+      <button type="submit">Create</button>
+    </form>
+
+    <div if.bind="draftCreated">
+      Draft <strong>${draft.setup.name}</strong> on map ${draft.setup.mapName} created! codes for links:
+      <div id="links-div" with.bind="draft.ids">
+        <div><strong>ADMIN</strong>: <input class="draftcode" type="text" value.bind="admin"><a href.bind="getLink(admin)" target="_blank">(Link)</a></div>
+        <div><strong>RED CAPT</strong>: <input class="draftcode" type="text" value.bind="red"><a href.bind="getLink(red)" target="_blank">(Link)</a></div>
+        <div><strong>BLUE CAPT:</strong> <input class="draftcode" type="text" value.bind="blue"><a href.bind="getLink(blue)" target="_blank">(Link)</a></div>
+        <div><strong>RESULTS:</strong> <input class="draftcode" type="text" value.bind="results"><a href.bind="getLink(results)" target="_blank">(Link)</a></div>
+      </div>
+
+      <em>warning </em> only one admin/red/blue capt link active at a time (most recently opened)
+    </div>
+
   </div>
 
 </template>
