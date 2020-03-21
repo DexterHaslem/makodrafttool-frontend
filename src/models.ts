@@ -37,4 +37,21 @@ export enum WebsocketMessageType {
 
 export class WebsocketMessage {
   msgType: WebsocketMessageType;
+  constructor(mtype) {
+    this.msgType = mtype;
+  }
+}
+
+export class WebsocketSnapshotMessage extends WebsocketMessage {
+ constructor() {
+   super(WebsocketMessageType.snapshot);
+ }
+}
+
+export class WebsocketSessionTypeMessage extends WebsocketMessage {
+  sessionType: SessionType;
+
+  constructor() {
+    super(WebsocketMessageType.sessionType);
+  }
 }
