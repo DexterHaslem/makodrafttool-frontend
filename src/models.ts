@@ -16,6 +16,11 @@ export class DraftSetup {
   countdownSecs: number;
 }
 
+export class DraftState {
+  sessionType: SessionType;
+  setup: DraftSetup;
+}
+
 export class DraftIDs {
   admin: string;
   blue: string;
@@ -48,7 +53,7 @@ export class PhaseVote {
 
 export class WsMsg {
   msgType: WebsocketMessageType;
-  sessionType: SessionType;
+  //sessionType: SessionType;
   setup: DraftSetup;
   adminConnected: boolean;
   redConnected: boolean;

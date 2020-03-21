@@ -6,12 +6,17 @@
   <div if.bind="connectionFailed">
     Connection failed, check code or draft is still running
   </div>
-  <div if.bind="!connectionFailed && !connecting">
-    ${snapshot.setup.mapName}
-
+  <div if.bind="!connectionFailed && !connecting && draftState">
+    <div>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}</div>
+    <div>Viewing as ${getDraftStateName()}</div>
     <div>Admin connected: ${snapshot.adminConnected ? 'TRUE' : 'FALSE'}</div>
     <div>red captain connected: ${snapshot.redConnected ? 'TRUE' : 'FALSE'}</div>
     <div>blue captain connected: ${snapshot.blueConnected ? 'TRUE' : 'FALSE'}</div>
-    <div># results vieweres ${snapshot.resultsViewers}</div>
+    <div># results viewers ${snapshot.resultsViewers}</div>
+
+    <div>Red ready ${snapshot.redReady ? 'YES' : 'NO' }</div>
+    <div>Blue ready ${snapshot.blueReady ? 'YES' : 'NO' }</div>
+
+    <div>${sessionType}</div>
   </div>
 </template>

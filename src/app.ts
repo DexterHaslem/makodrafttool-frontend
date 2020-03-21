@@ -1,4 +1,4 @@
-import {RouterConfiguration, Router} from 'aurelia-router';
+import {Router, RouterConfiguration} from 'aurelia-router';
 import {PLATFORM} from "aurelia-framework";
 
 export class App {
@@ -14,7 +14,6 @@ export class App {
         name: 'admin',
         moduleId: PLATFORM.moduleName('admin/admin'),
         title: "Create Draft",
-        nav: true,
       },
       {route: 'v/:id/', name: 'view', moduleId: PLATFORM.moduleName('view/view'), title: "BR Draft view"},
     ]);

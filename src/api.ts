@@ -1,5 +1,5 @@
-import { HttpClient, json } from 'aurelia-fetch-client';
-import { inject } from 'aurelia-framework';
+import {HttpClient, json} from 'aurelia-fetch-client';
+import {inject} from 'aurelia-framework';
 
 const BASE_URL = 'http://localhost:8081/';
 const BASE_WS_URL = 'ws://localhost:8081/';
@@ -22,6 +22,12 @@ export class Api {
         method: 'post',
         body: json(nd)
       })
+      .then(resp => resp.json())
+      .catch(err => console.error(err));
+  }
+
+  getDraftState(sessionCode) {
+    return this.http.fetch('draftState/' + sessionCode)
       .then(resp => resp.json())
       .catch(err => console.error(err));
   }

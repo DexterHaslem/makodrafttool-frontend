@@ -1,12 +1,13 @@
 import {inject} from 'aurelia-framework';
 import {Api} from '../api';
-import {WebsocketMessageType, WsMsg} from "../models";
+import {DraftState, SessionType, WebsocketMessageType, WsMsg} from "../models";
 
 @inject(Api)
 export class View {
   api: Api;
   ws: WebSocket;
   draftCode: string;
+  draftState: DraftState;
 
   connectionFailed: boolean;
   connecting: boolean;
@@ -20,11 +21,39 @@ export class View {
 
   activate(params) {
     this.draftCode = params.id;
+    this.api.getDraftState(this.draftCode)
+      .then(st => this.draftState = st);
     this.ws = this.api.getWs(this.draftCode);
     this.ws.onopen = this.onWsOpen.bind(this);
     this.ws.onclose = this.onWsClose.bind(this);
     this.ws.onerror = this.onWsError.bind(this);
     this.ws.onmessage = this.onWsMessage.bind(this);
+  }
+
+  private isAdmin(): boolean {
+    return this.draftState && this.draftState.sessionType == SessionType.Admin;
+  }
+
+  private isCaptain(): boolean {
+    return this.draftState && (this.draftState.sessionType == SessionType.Red ||
+      this.draftState.sessionType == SessionType.Blue);
+  }
+
+  private getDraftStateName() {
+    if (this.draftState) {
+      switch (this.draftState.sessionType) {
+        case SessionType.Admin:
+          return "Admin";
+        case SessionType.Blue:
+          return "Blue captain";
+        case SessionType.Red:
+          return "Red captain";
+        case SessionType.Results:
+          return "Results viewer";
+      }
+    }
+
+    return "UNKNOWN";
   }
 
   private onWsOpen(ev: Event) {
@@ -50,6 +79,5 @@ export class View {
       this.snapshot = m;
       this.gotSnapshot = true;
     }
-
   }
 }
