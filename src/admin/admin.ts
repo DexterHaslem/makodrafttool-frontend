@@ -10,10 +10,26 @@ export class Admin {
 
   constructor(api) {
     this.api = api;
+    this.draft = {
+      setup: {
+        blueName: "Blue",
+        countdownSecs: 3,
+        mapName: "Map",
+        name: "My new Draft",
+        redName: "Red",
+        voteSecs: 10
+      },
+      ids: {
+        admin: "",
+        blue: "",
+        red: "",
+        results: ""
+      }
+    }
   }
 
   onCreate() {
-    let d = this.api.createDraft(this.draft);
+    let d = this.api.createDraft(this.draft.setup);
     d.then(v => {
       this.draftCreated = true;
       this.draft = v;

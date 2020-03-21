@@ -31,27 +31,34 @@ export class Draft {
 /* websocket types */
 export enum WebsocketMessageType {
   snapshot = 1,
-  sessionType,
   voteAction,
+  clientClose,
+  serverClose,
+  clientReady
 }
 
-export class WebsocketMessage {
+export class PhaseVote {
+  hasVoted: boolean;
+  phaseNum: number;
+  validRedValues: string[];
+  validBlueValues: string[];
+  voteRedValue: string;
+  voteBlueValue: string;
+}
+
+export class WsMsg {
   msgType: WebsocketMessageType;
-  constructor(mtype) {
-    this.msgType = mtype;
-  }
-}
-
-export class WebsocketSnapshotMessage extends WebsocketMessage {
- constructor() {
-   super(WebsocketMessageType.snapshot);
- }
-}
-
-export class WebsocketSessionTypeMessage extends WebsocketMessage {
   sessionType: SessionType;
+  setup: DraftSetup;
+  adminConnected: boolean;
+  redConnected: boolean;
+  blueConnected: boolean;
+  resultsViewers: number;
+  voteValue: string;
+  voteTimedOut: boolean;
+  redReady: boolean;
+  blueReady: boolean;
 
-  constructor() {
-    super(WebsocketMessageType.sessionType);
-  }
+  currentPhase: number;
+  phases: PhaseVote[];
 }

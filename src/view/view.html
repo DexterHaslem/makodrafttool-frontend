@@ -1,3 +1,17 @@
 <template>
-  view html for code ${draftCode}
+  <div if.bind="connecting">
+    connecting to draft id ${draftCode}...
+  </div>
+
+  <div if.bind="connectionFailed">
+    Connection failed, check code or draft is still running
+  </div>
+  <div if.bind="!connectionFailed && !connecting">
+    ${snapshot.setup.mapName}
+
+    <div>Admin connected: ${snapshot.adminConnected ? 'TRUE' : 'FALSE'}</div>
+    <div>red captain connected: ${snapshot.redConnected ? 'TRUE' : 'FALSE'}</div>
+    <div>blue captain connected: ${snapshot.blueConnected ? 'TRUE' : 'FALSE'}</div>
+    <div># results vieweres ${snapshot.resultsViewers}</div>
+  </div>
 </template>
