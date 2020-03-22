@@ -1,5 +1,6 @@
 import {inject} from 'aurelia-framework';
 import {Api} from '../api';
+import * as R from 'ramda';
 import {Champions, DraftState, SessionType, WebsocketMessageType, WsMsg} from "../models";
 
 const TimerUpdateMs = 150;
@@ -21,22 +22,26 @@ export class View {
   countdownVal: string;
   selectedVoteValue: string;
   lockinEnabled: boolean;
+
   champions: Champions;
+  validChampions: Champions;
 
   constructor(api) {
     this.api = api;
     this.connecting = true;
-    this.selectedVoteValue = 'foobar';
+    this.selectedVoteValue = 'none';
     this.api.getChampions().then(c => this.champions = c);
   }
 
   activate(params, route) {
     this.draftCode = params.id;
+
     this.api.getDraftState(this.draftCode)
       .then(st => {
         this.draftState = st;
         route.navModel.router.title = "BR Draft : " + this.getDraftStateName()
       });
+
     this.ws = this.api.getWs(this.draftCode);
     this.ws.onopen = this.onWsOpen.bind(this);
     this.ws.onclose = this.onWsClose.bind(this);
@@ -53,7 +58,7 @@ export class View {
       this.draftState.sessionType == SessionType.Blue);
   }
 
-  private createWsMsg(type: WebsocketMessageType): WsMsg {
+  private static createWsMsg(type: WebsocketMessageType): WsMsg {
     let wsm: WsMsg = {
       adminConnected: false,
       blueConnected: false,
@@ -77,7 +82,7 @@ export class View {
   }
 
   private sendReady() {
-    let wsm: WsMsg = this.createWsMsg(WebsocketMessageType.clientReady);
+    let wsm: WsMsg = View.createWsMsg(WebsocketMessageType.clientReady);
     this.sendWsMsg(wsm)
   }
 
@@ -131,19 +136,17 @@ export class View {
     }
 
     if (!this.prevSnapshot.voteActive && this.snapshot.voteActive) {
-      this.voteStartedAt = new Date().getTime();
-      this.lockinEnabled = true;
-      this.voteActiveTimer = setInterval(this.timerCallback.bind(this), TimerUpdateMs);
+      this.setupNewVote();
     }
   }
 
   private startPhaseVote() {
-    let m: WsMsg = this.createWsMsg(WebsocketMessageType.startVoting);
+    let m: WsMsg = View.createWsMsg(WebsocketMessageType.startVoting);
     this.sendWsMsg(m)
   }
 
   private lockinVote() {
-    let m: WsMsg = this.createWsMsg(WebsocketMessageType.voteAction);
+    let m: WsMsg = View.createWsMsg(WebsocketMessageType.voteAction);
     m.currentVote = {
       hasVoted: false, phaseNum: 0, validBlueValues: [], validRedValues: [],
       redHasVoted: false,
@@ -151,7 +154,7 @@ export class View {
       voteBlueValue: this.selectedVoteValue,
       voteRedValue: this.selectedVoteValue,
     };
-    this.sendWsMsg(m)
+    this.sendWsMsg(m);
     this.lockinEnabled = false;
   }
 
@@ -164,5 +167,32 @@ export class View {
     if (remaining <= 0) {
       clearInterval(this.voteActiveTimer);
     }
+  }
+
+  private setupNewVote() {
+    this.voteStartedAt = new Date().getTime();
+    this.lockinEnabled = true;
+    this.voteActiveTimer = setInterval(this.timerCallback.bind(this), TimerUpdateMs);
+    this.selectedVoteValue = 'none';
+
+    this.validChampions = {
+      melee: R.clone(this.champions.melee),
+      ranged: R.clone(this.champions.ranged),
+      support: R.clone(this.champions.support)
+    };
+
+    /* filter champs to valid selections */
+    if (this.isCaptain()) {
+      this.filterValidChamps(this.draftState.sessionType == SessionType.Blue ?
+        this.snapshot.currentVote.validBlueValues : this.snapshot.currentVote.validRedValues);
+    }
+  }
+
+  private filterValidChamps(validValues: string[]) {
+    // this sorta stinks, maybe breaking out by category is the worst way to do this
+    const champValid = c => R.any(v => v.name === c.name, validValues);
+    this.validChampions.melee = R.filter(champValid, this.validChampions.melee);
+    this.validChampions.ranged = R.filter(champValid, this.validChampions.ranged);
+    this.validChampions.support = R.filter(champValid, this.validChampions.support);
   }
 }

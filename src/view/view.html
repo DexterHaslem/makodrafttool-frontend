@@ -26,11 +26,9 @@
     </div>
 
     <div if.bind="isCaptain()">
-
       <button click.trigger="sendReady()">Toggle READY</button>
-
-
     </div>
+
     <div if.bind="snapshot.voteActive">
       VOTING ACTIVE!
       <div>${snapshot.currentVote.phaseType}</div>
@@ -40,7 +38,22 @@
         <div>Red vote locked in ${snapshot.currentVote.redHasVoted != '' ? 'YES' : 'NO' }</div>
         <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted != '' ? 'YES' : 'NO' }</div>
       </div>
-      <button if.bind="isCaptain()" click.trigger="lockinVote()" disabled.bind="!lockinEnabled">Lock in</button>
+
+      <div if.bind="isCaptain()">
+        <select value.bind="selectedVoteValue" disabled.bind="!lockinEnabled">
+          <option model.bind="none">Choose ..</option>
+          <optgroup label="melee">
+            <option repeat.for="mc of validChampions.melee" model.bind="mc.name">${mc.displayName}</option>
+          </optgroup>
+          <optgroup label="ranged">
+            <option repeat.for="rc of validChampions.ranged" model.bind="rc.name">${rc.displayName}</option>
+          </optgroup>
+          <optgroup label="support">
+            <option repeat.for="sc of validChampions.support" model.bind="sc.name">${sc.displayName}</option>
+          </optgroup>
+        </select>
+        <button click.trigger="lockinVote()" disabled.bind="!lockinEnabled">Lock in</button>
+      </div>
     </div>
   </div>
 </template>
