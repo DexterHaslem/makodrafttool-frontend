@@ -38,6 +38,12 @@ export class Api {
       .catch(err => console.error(err));
   }
 
+  getMaps() {
+    return this.http.fetch('maps')
+      .then(resp => resp.json())
+      .catch(err => console.error(err));
+  }
+
   getWs(sessionCode) {
     let ws = new WebSocket(BASE_WS_URL + "ws/" + sessionCode);
     return ws

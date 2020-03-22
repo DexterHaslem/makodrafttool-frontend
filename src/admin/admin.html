@@ -25,7 +25,9 @@
         </div>
         <div class="setuprow">
           <label>Map</label>
-          <input type="text" value.bind="draft.setup.mapName">
+          <select value.bind="draft.setup.mapName">
+            <option repeat.for="m of maps" model.bind="m.name">${m.displayName}</option>
+          </select>
         </div>
 
         <div class="setuprow">
@@ -40,7 +42,7 @@
 
         <div class="setuprow">
           <label>Voting seconds</label>
-          <input type="number" value.bind="draft.setup.voteSecs">
+          <input type="number" min="3" max="100" value.bind="draft.setup.voteSecs">
         </div>
 
         <button type="submit">Create</button>

@@ -78,7 +78,16 @@ export class WsMsg {
   draftDone: boolean;
 }
 
-export class Champion {
+export class GameEntity {
+  name: string;
+  displayName: string;
+  asset: string;
+}
+
+export class Champion extends GameEntity {
+}
+
+export class GameMap extends GameEntity {
 
 }
 

@@ -193,7 +193,7 @@ export class View {
 
   private filterValidChamps(validValues: string[]) {
     // this sorta stinks, maybe breaking out by category is the worst way to do this
-    const champValid = c => true; //R.any(v => v.name === c.name, validValues);
+    const champValid = c => R.any(v => v.name === c.name, validValues);
     this.validChampions.melee = R.filter(champValid, this.validChampions.melee);
     this.validChampions.ranged = R.filter(champValid, this.validChampions.ranged);
     this.validChampions.support = R.filter(champValid, this.validChampions.support);

@@ -1,12 +1,13 @@
 import {inject} from 'aurelia-framework';
 import {Api} from '../api';
-import {Draft} from 'models';
+import {Draft, GameMap} from 'models';
 
 @inject(Api)
 export class Admin {
   api: Api;
   draft: Draft;
   draftCreated: boolean;
+  maps: GameMap[];
 
   constructor(api) {
     this.api = api;
@@ -26,10 +27,14 @@ export class Admin {
         results: ""
       }
     }
+    this.api.getMaps().then(v => this.maps = v);
   }
 
   onCreate() {
-    let d = this.api.createDraft(this.draft.setup);
+    /* number input converts bound value to string, cast is to make TS happy. woo */
+    const voteSecs = parseFloat(String(this.draft.setup.voteSecs));
+    this.draft.setup.voteSecs = voteSecs;
+    const d = this.api.createDraft(this.draft.setup);
     d.then(v => {
       this.draft = v;
       this.draftCreated = true;
