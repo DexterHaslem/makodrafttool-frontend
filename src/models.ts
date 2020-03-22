@@ -43,9 +43,15 @@ export enum WebsocketMessageType {
   startVoting,
 }
 
+export enum PhaseType {
+  ban = 'ban',
+  pick = 'pick'
+}
+
 export class PhaseVote {
   hasVoted: boolean;
   phaseNum: number;
+  phaseType: PhaseType;
   redHasVoted: boolean;
   blueHasVoted: boolean;
   validRedValues: string[];
@@ -69,6 +75,7 @@ export class WsMsg {
   currentVote: PhaseVote;
   currentPhase: number;
   phases: PhaseVote[];
+  draftDone: boolean;
 }
 
 export class Champion {

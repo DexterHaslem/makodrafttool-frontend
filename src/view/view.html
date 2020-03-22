@@ -19,24 +19,24 @@
     <div>Blue ready ${snapshot.blueReady ? 'YES' : 'NO' }</div>
 
 
-    <div if.bind="isAdmin()">
+    <div if.bind="isAdmin() && !snapshot.draftDone">
       <button if.bind="!snapshot.voteActive" click.trigger="startPhaseVote()">Start ${snapshot.currentVote.phaseType}
         voting
       </button>
     </div>
 
-    <div if.bind="isCaptain()">
+    <div if.bind="isCaptain() && !snapshot.draftDone">
       <button click.trigger="sendReady()">Toggle READY</button>
     </div>
 
     <div if.bind="snapshot.voteActive">
       VOTING ACTIVE!
-      <div>${snapshot.currentVote.phaseType}</div>
+      <h3>${snapshot.currentVote.phaseType == 'ban' ? 'BANNING' : 'PICKING'}</h3>
       <strong>${countdownVal} seconds left ..</strong>
 
       <div if.bind="isAdmin()">
-        <div>Red vote locked in ${snapshot.currentVote.redHasVoted != '' ? 'YES' : 'NO' }</div>
-        <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted != '' ? 'YES' : 'NO' }</div>
+        <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }</div>
+        <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO' }</div>
       </div>
 
       <div if.bind="isCaptain()">
@@ -53,6 +53,14 @@
           </optgroup>
         </select>
         <button click.trigger="lockinVote()" disabled.bind="!lockinEnabled">Lock in</button>
+      </div>
+    </div>
+
+    <div>
+      <div repeat.for="p of snapshot.phases">
+        Phase ${p.phaseType} (# ${p.phaseNum + 1})
+        Red voted: ${p.voteRedValue}
+        Blue voted: ${p.voteRedValue}
       </div>
     </div>
   </div>

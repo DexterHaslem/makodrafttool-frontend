@@ -1,7 +1,7 @@
 import {inject} from 'aurelia-framework';
 import {Api} from '../api';
 import * as R from 'ramda';
-import {Champions, DraftState, SessionType, WebsocketMessageType, WsMsg} from "../models";
+import {Champions, DraftState, PhaseType, SessionType, WebsocketMessageType, WsMsg} from "../models";
 
 const TimerUpdateMs = 150;
 
@@ -61,6 +61,7 @@ export class View {
   private static createWsMsg(type: WebsocketMessageType): WsMsg {
     let wsm: WsMsg = {
       adminConnected: false,
+      draftDone: false,
       blueConnected: false,
       blueReady: false,
       currentPhase: 0,
@@ -147,7 +148,9 @@ export class View {
 
   private lockinVote() {
     let m: WsMsg = View.createWsMsg(WebsocketMessageType.voteAction);
+    /* note none of these values are needed other than vote value. just need proper dto */
     m.currentVote = {
+      phaseType: PhaseType.ban,
       hasVoted: false, phaseNum: 0, validBlueValues: [], validRedValues: [],
       redHasVoted: false,
       blueHasVoted: false,
@@ -190,7 +193,7 @@ export class View {
 
   private filterValidChamps(validValues: string[]) {
     // this sorta stinks, maybe breaking out by category is the worst way to do this
-    const champValid = c => R.any(v => v.name === c.name, validValues);
+    const champValid = c => true; //R.any(v => v.name === c.name, validValues);
     this.validChampions.melee = R.filter(champValid, this.validChampions.melee);
     this.validChampions.ranged = R.filter(champValid, this.validChampions.ranged);
     this.validChampions.support = R.filter(champValid, this.validChampions.support);
