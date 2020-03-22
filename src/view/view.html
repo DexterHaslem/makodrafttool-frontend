@@ -6,9 +6,10 @@
   <div if.bind="connectionFailed">
     Connection failed, check code or draft is still running
   </div>
+
   <div if.bind="!connectionFailed && !connecting && draftState">
-    <div>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}</div>
-    <div>Viewing as ${getDraftStateName()}</div>
+    <h2>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}</h2>
+    <h3>Viewing as ${getDraftStateName()}</h3>
     <div>Admin connected: ${snapshot.adminConnected ? 'TRUE' : 'FALSE'}</div>
     <div>red captain connected: ${snapshot.redConnected ? 'TRUE' : 'FALSE'}</div>
     <div>blue captain connected: ${snapshot.blueConnected ? 'TRUE' : 'FALSE'}</div>
@@ -17,6 +18,29 @@
     <div>Red ready ${snapshot.redReady ? 'YES' : 'NO' }</div>
     <div>Blue ready ${snapshot.blueReady ? 'YES' : 'NO' }</div>
 
-    <div>${sessionType}</div>
+
+    <div if.bind="isAdmin()">
+      <button if.bind="!snapshot.voteActive" click.trigger="startPhaseVote()">Start ${snapshot.currentVote.phaseType}
+        voting
+      </button>
+    </div>
+
+    <div if.bind="isCaptain()">
+
+      <button click.trigger="sendReady()">Toggle READY</button>
+
+
+    </div>
+    <div if.bind="snapshot.voteActive">
+      VOTING ACTIVE!
+      <div>${snapshot.currentVote.phaseType}</div>
+      <strong>${countdownVal} seconds left ..</strong>
+
+      <div if.bind="isAdmin()">
+        <div>Red vote locked in ${snapshot.currentVote.redHasVoted != '' ? 'YES' : 'NO' }</div>
+        <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted != '' ? 'YES' : 'NO' }</div>
+      </div>
+      <button if.bind="isCaptain()" click.trigger="lockinVote()" disabled.bind="!lockinEnabled">Lock in</button>
+    </div>
   </div>
 </template>

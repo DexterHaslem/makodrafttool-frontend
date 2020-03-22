@@ -39,12 +39,15 @@ export enum WebsocketMessageType {
   voteAction,
   clientClose,
   serverClose,
-  clientReady
+  clientReady,
+  startVoting,
 }
 
 export class PhaseVote {
   hasVoted: boolean;
   phaseNum: number;
+  redHasVoted: boolean;
+  blueHasVoted: boolean;
   validRedValues: string[];
   validBlueValues: string[];
   voteRedValue: string;
@@ -59,11 +62,11 @@ export class WsMsg {
   redConnected: boolean;
   blueConnected: boolean;
   resultsViewers: number;
-  voteValue: string;
   voteTimedOut: boolean;
   redReady: boolean;
   blueReady: boolean;
-
+  voteActive: boolean;
+  currentVote: PhaseVote;
   currentPhase: number;
   phases: PhaseVote[];
 }
