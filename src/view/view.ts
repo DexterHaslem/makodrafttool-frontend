@@ -1,6 +1,6 @@
 import {inject} from 'aurelia-framework';
 import {Api} from '../api';
-import {DraftState, SessionType, WebsocketMessageType, WsMsg} from "../models";
+import {Champions, DraftState, SessionType, WebsocketMessageType, WsMsg} from "../models";
 
 const TimerUpdateMs = 150;
 
@@ -21,11 +21,13 @@ export class View {
   countdownVal: string;
   selectedVoteValue: string;
   lockinEnabled: boolean;
+  champions: Champions;
 
   constructor(api) {
     this.api = api;
     this.connecting = true;
     this.selectedVoteValue = 'foobar';
+    this.api.getChampions().then(c => this.champions = c);
   }
 
   activate(params, route) {

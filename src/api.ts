@@ -32,6 +32,12 @@ export class Api {
       .catch(err => console.error(err));
   }
 
+  getChampions() {
+    return this.http.fetch('champions')
+      .then(resp => resp.json())
+      .catch(err => console.error(err));
+  }
+
   getWs(sessionCode) {
     let ws = new WebSocket(BASE_WS_URL + "ws/" + sessionCode);
     return ws

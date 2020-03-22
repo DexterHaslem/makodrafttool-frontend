@@ -70,3 +70,13 @@ export class WsMsg {
   currentPhase: number;
   phases: PhaseVote[];
 }
+
+export class Champion {
+
+}
+
+export class Champions {
+  melee: Champion[];
+  ranged: Champion[];
+  support: Champion[];
+}
