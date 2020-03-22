@@ -17,7 +17,7 @@ export class Admin {
         mapName: "Map",
         name: "My new Draft",
         redName: "Red",
-        voteSecs: 10
+        voteSecs: 30
       },
       ids: {
         admin: "",
@@ -31,8 +31,8 @@ export class Admin {
   onCreate() {
     let d = this.api.createDraft(this.draft.setup);
     d.then(v => {
-      this.draftCreated = true;
       this.draft = v;
+      this.draftCreated = true;
     });
   }
 

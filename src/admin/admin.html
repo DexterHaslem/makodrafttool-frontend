@@ -1,32 +1,51 @@
 <template>
   <style>
-    #links-div {
+    .setupform {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .setuprow {
 
     }
 
     .draftcode {
-      width: 285px;
+      width: 185px;
     }
+
   </style>
   <div>
     <h2>Create new draft</h2>
 
-    <form submit.trigger="onCreate()" if.bind="!draftCreated">
-      <label>Draft name</label>
-      <input type="text" value.bind="draft.setup.name">
+    <div class="setupform">
+      <form submit.trigger="onCreate()" if.bind="!draftCreated">
+        <div class="setuprow">
+          <label>Draft name</label>
+          <input type="text" value.bind="draft.setup.name">
+        </div>
+        <div class="setuprow">
+          <label>Map</label>
+          <input type="text" value.bind="draft.setup.mapName">
+        </div>
 
-      <label>Map</label>
-      <input type="text" value.bind="draft.setup.mapName">
+        <div class="setuprow">
+          <label>Blue team name</label>
+          <input type="text" value.bind="draft.setup.blueName">
+        </div>
 
-      <label>Blue team name</label>
-      <input type="text" value.bind="draft.setup.blueName">
+        <div class="setuprow">
+          <label>Red team name</label>
+          <input type="text" value.bind="draft.setup.redName">
+        </div>
 
-      <label>Red team name</label>
-      <input type="text" value.bind="draft.setup.redName">
+        <div class="setuprow">
+          <label>Voting seconds</label>
+          <input type="number" value.bind="draft.setup.voteSecs">
+        </div>
 
-      <button type="submit">Create</button>
-    </form>
-
+        <button type="submit">Create</button>
+      </form>
+    </div>
     <div if.bind="draftCreated">
       Draft <strong>${draft.setup.name}</strong> on map ${draft.setup.mapName} created! codes for links:
       <div id="links-div" with.bind="draft.ids">
