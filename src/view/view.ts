@@ -31,6 +31,9 @@ export class View {
     this.connecting = true;
     this.selectedVoteValue = 'none';
     this.api.getChampions().then(c => this.champions = c);
+
+    // enable by default incase they refresh
+    this.lockinEnabled = true;
   }
 
   activate(params, route) {
@@ -102,6 +105,20 @@ export class View {
     }
 
     return "UNKNOWN";
+  }
+
+  getLockInButtonDisabled() {
+    return this.selectedVoteValue === 'none' || !this.lockinEnabled;
+  }
+
+  getReadyText() {
+    if (!this.snapshot) {
+      return 'No';
+    }
+
+    const ret = (this.draftState.sessionType === SessionType.Red && this.snapshot.redReady) ||
+      (this.draftState.sessionType === SessionType.Blue && this.snapshot.blueReady);
+    return ret ? 'Yes' : 'No';
   }
 
   private onWsOpen(ev: Event) {
@@ -193,7 +210,7 @@ export class View {
 
   private filterValidChamps(validValues: string[]) {
     // this sorta stinks, maybe breaking out by category is the worst way to do this
-    const champValid = c => R.any(v => v.name === c.name, validValues);
+    const champValid = c => R.any(v => v === c.name, validValues);
     this.validChampions.melee = R.filter(champValid, this.validChampions.melee);
     this.validChampions.ranged = R.filter(champValid, this.validChampions.ranged);
     this.validChampions.support = R.filter(champValid, this.validChampions.support);

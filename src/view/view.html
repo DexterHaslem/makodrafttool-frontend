@@ -8,25 +8,33 @@
   </div>
 
   <div if.bind="!connectionFailed && !connecting && draftState">
-    <h2>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}</h2>
+    <h3>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}</h3>
     <h3>Viewing as ${getDraftStateName()}</h3>
+
+    <div>Red team name: <strong>${draftState.setup.redName}</strong> Blue team name: <strong>${draftState.setup.blueName}</strong>
+    </div>
     <div>Admin connected: ${snapshot.adminConnected ? 'TRUE' : 'FALSE'}</div>
     <div>red captain connected: ${snapshot.redConnected ? 'TRUE' : 'FALSE'}</div>
     <div>blue captain connected: ${snapshot.blueConnected ? 'TRUE' : 'FALSE'}</div>
     <div># results viewers ${snapshot.resultsViewers}</div>
 
-    <div>Red ready ${snapshot.redReady ? 'YES' : 'NO' }</div>
-    <div>Blue ready ${snapshot.blueReady ? 'YES' : 'NO' }</div>
+    <div if.bind="isAdmin() && !snapshot.draftDone && !snapshot.voteActive">
 
-
-    <div if.bind="isAdmin() && !snapshot.draftDone">
-      <button if.bind="!snapshot.voteActive" click.trigger="startPhaseVote()">Start ${snapshot.currentVote.phaseType}
-        voting
+      <button if.bind="snapshot.redReady && snapshot.blueReady" click.trigger="startPhaseVote()">
+        Start ${snapshot.currentVote.phaseType} voting
       </button>
+      <div if.bind="!snapshot.redReady || !snapshot.blueReady">
+        Waiting for both captains to ready up to start next vote..
+      </div>
     </div>
 
-    <div if.bind="isCaptain() && !snapshot.draftDone">
-      <button click.trigger="sendReady()">Toggle READY</button>
+    <div if.bind="!snapshot.draftDone">
+      <div>Red ready ${snapshot.redReady ? 'YES' : 'NO' }</div>
+      <div>Blue ready ${snapshot.blueReady ? 'YES' : 'NO' }</div>
+    </div>
+    <div if.bind="isCaptain() && !snapshot.draftDone && !snapshot.voteActive">
+      <button click.trigger="sendReady()">Ready</button>
+      Voting will start once both captains done and admin starts
     </div>
 
     <div if.bind="snapshot.voteActive">
@@ -52,15 +60,16 @@
             <option repeat.for="sc of validChampions.support" model.bind="sc.name">${sc.displayName}</option>
           </optgroup>
         </select>
-        <button click.trigger="lockinVote()" disabled.bind="!lockinEnabled">Lock in</button>
+        <button click.trigger="lockinVote()" disabled.bind="selectedVoteValue == 'none' || !lockinEnabled">Lock in
+        </button>
       </div>
     </div>
 
     <div>
       <div repeat.for="p of snapshot.phases">
         Phase ${p.phaseType} (# ${p.phaseNum + 1})
-        Red voted: ${p.voteRedValue}
-        Blue voted: ${p.voteRedValue}
+        Red voted: <span>${p.voteRedValue || 'DID NOT VOTE!'}</span>
+        Blue voted: <span>${p.voteBlueValue || 'DID NOT VOTE!'}</span>
       </div>
     </div>
   </div>
