@@ -12,8 +12,8 @@ export class DraftSetup {
   mapName: string;
   blueName: string;
   redName: string;
-  voteSecs: number;
-  countdownSecs: number;
+  votingSecs: number[];
+  phaseDelaySecs: number;
 }
 
 export class DraftState {
@@ -64,6 +64,7 @@ export class WsMsg {
   msgType: WebsocketMessageType;
   //sessionType: SessionType;
   setup: DraftSetup;
+  draftStarted: boolean;
   adminConnected: boolean;
   redConnected: boolean;
   blueConnected: boolean;
@@ -72,6 +73,9 @@ export class WsMsg {
   redReady: boolean;
   blueReady: boolean;
   voteActive: boolean;
+  votePaused: boolean;
+  voteTimeLeft: number;
+  voteTimeLeftPretty: string;
   currentVote: PhaseVote;
   currentPhase: number;
   phases: PhaseVote[];

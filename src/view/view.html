@@ -16,31 +16,33 @@
     <div>Admin connected: ${snapshot.adminConnected ? 'TRUE' : 'FALSE'}</div>
     <div>red captain connected: ${snapshot.redConnected ? 'TRUE' : 'FALSE'}</div>
     <div>blue captain connected: ${snapshot.blueConnected ? 'TRUE' : 'FALSE'}</div>
-    <div># results viewers ${snapshot.resultsViewers}</div>
+    <div># viewers: ${snapshot.resultsViewers}</div>
 
-    <div if.bind="isAdmin() && !snapshot.draftDone && !snapshot.voteActive">
-
-      <button if.bind="snapshot.redReady && snapshot.blueReady" click.trigger="startPhaseVote()">
-        Start ${snapshot.currentVote.phaseType} voting
-      </button>
-      <div if.bind="!snapshot.redReady || !snapshot.blueReady">
-        Waiting for both captains to ready up to start next vote..
+    <div if.bind="isAdmin() && !snapshot.draftStarted">
+      <div if.bind="!snapshot.draftDone">
+        <div>Red ready ${snapshot.redReady ? 'YES' : 'NO' }</div>
+        <div>Blue ready ${snapshot.blueReady ? 'YES' : 'NO' }</div>
       </div>
+
+      <!-- removed ready req: if.bind="snapshot.redReady && snapshot.blueReady"  -->
+      <button click.trigger="startDraftVoting()">
+        Start Draft!
+      </button>
     </div>
 
-    <div if.bind="!snapshot.draftDone">
-      <div>Red ready ${snapshot.redReady ? 'YES' : 'NO' }</div>
-      <div>Blue ready ${snapshot.blueReady ? 'YES' : 'NO' }</div>
-    </div>
     <div if.bind="isCaptain() && !snapshot.draftDone && !snapshot.voteActive">
       <button click.trigger="sendReady()">Ready</button>
-      Voting will start once both captains done and admin starts
+      Voting will start once admin starts draft
+    </div>
+
+    <div if.bind="snapshot.draftStarted && !snapshot.voteActive">
+      Pending next ban/pick... get ready
     </div>
 
     <div if.bind="snapshot.voteActive">
       VOTING ACTIVE!
       <h3>${snapshot.currentVote.phaseType == 'ban' ? 'BANNING' : 'PICKING'}</h3>
-      <strong>${countdownVal} seconds left ..</strong>
+      <strong>${snapshot.voteTimeLeftPretty} seconds left ..</strong>
 
       <div if.bind="isAdmin()">
         <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }</div>
@@ -65,11 +67,13 @@
       </div>
     </div>
 
+    <hr>
     <div>
+      <h4>Draft results </h4>
       <div repeat.for="p of snapshot.phases">
-        Phase ${p.phaseType} (# ${p.phaseNum + 1})
-        Red voted: <span>${p.voteRedValue || 'DID NOT VOTE!'}</span>
-        Blue voted: <span>${p.voteBlueValue || 'DID NOT VOTE!'}</span>
+        vote# (${p.phaseNum + 1}) - ${p.phaseType}:
+        <span>Red: <strong>{p.voteRedValue || 'DID NOT VOTE!'}</strong></span>
+        <span>Blue: <strong>{p.voteBlueValue || 'DID NOT VOTE!'}</strong></span>
       </div>
     </div>
   </div>

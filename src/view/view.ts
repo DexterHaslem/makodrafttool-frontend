@@ -63,8 +63,10 @@ export class View {
 
   private static createWsMsg(type: WebsocketMessageType): WsMsg {
     let wsm: WsMsg = {
+      voteTimeLeftPretty: '',
       adminConnected: false,
       draftDone: false,
+      draftStarted: false,
       blueConnected: false,
       blueReady: false,
       currentPhase: 0,
@@ -76,6 +78,8 @@ export class View {
       resultsViewers: 0,
       setup: undefined,
       voteActive: false,
+      votePaused: false,
+      voteTimeLeft: 0,
       voteTimedOut: false,
     };
     return wsm;
@@ -158,7 +162,7 @@ export class View {
     }
   }
 
-  private startPhaseVote() {
+  private startDraftVoting() {
     let m: WsMsg = View.createWsMsg(WebsocketMessageType.startVoting);
     this.sendWsMsg(m)
   }
@@ -178,21 +182,31 @@ export class View {
     this.lockinEnabled = false;
   }
 
+  /*
   private timerCallback() {
+    if (!this.snapshot || !this.snapshot.voteActive || this.snapshot.votePaused) {
+      return;
+    }
     let now = new Date().getTime();
     let dif = now - this.voteStartedAt;
     const secsDiff = Math.abs(dif / 1000);
-    const remaining = this.draftState.setup.voteSecs - secsDiff;
+    const maxSecs = this.draftState.setup.votingSecs[this.snapshot.currentVote.phaseNum];
+    const remaining = maxSecs - secsDiff;
     this.countdownVal = remaining.toFixed(2);
     if (remaining <= 0) {
       clearInterval(this.voteActiveTimer);
     }
+  } */
+
+  private prettyVoteValue(champName: string): string {
+    return champName;
   }
 
   private setupNewVote() {
     this.voteStartedAt = new Date().getTime();
     this.lockinEnabled = true;
-    this.voteActiveTimer = setInterval(this.timerCallback.bind(this), TimerUpdateMs);
+    // note: timer values are sent by server
+    // this.voteActiveTimer = setInterval(this.timerCallback.bind(this), TimerUpdateMs);
     this.selectedVoteValue = 'none';
 
     this.validChampions = {
