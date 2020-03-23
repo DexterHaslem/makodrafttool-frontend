@@ -30,7 +30,7 @@
       </button>
     </div>
 
-    <div if.bind="isCaptain() && !snapshot.draftDone && !snapshot.voteActive">
+    <div if.bind="isCaptain() && !snapshot.draftStarted">
       <button click.trigger="sendReady()">Ready</button>
       Voting will start once admin starts draft
     </div>
@@ -45,8 +45,12 @@
       <strong>${snapshot.voteTimeLeftPretty} seconds left ..</strong>
 
       <div if.bind="isAdmin()">
-        <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }</div>
-        <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO' }</div>
+        <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }
+          (${snapshot.currentVote.voteRedValue})
+        </div>
+        <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO'
+          }(${snapshot.currentVote.voteBlueValue})
+        </div>
       </div>
 
       <div if.bind="isCaptain()">
@@ -72,8 +76,8 @@
       <h4>Draft results </h4>
       <div repeat.for="p of snapshot.phases">
         vote# (${p.phaseNum + 1}) - ${p.phaseType}:
-        <span>Red: <strong>{p.voteRedValue || 'DID NOT VOTE!'}</strong></span>
-        <span>Blue: <strong>{p.voteBlueValue || 'DID NOT VOTE!'}</strong></span>
+        <span>Red: <strong>${p.voteRedValue || 'DID NOT VOTE!'}</strong></span>
+        <span>Blue: <strong>${p.voteBlueValue || 'DID NOT VOTE!'}</strong></span>
       </div>
     </div>
   </div>
