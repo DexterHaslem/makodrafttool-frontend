@@ -117,6 +117,7 @@
         vote# (${p.phaseNum + 1}) - ${p.phaseType}:
         <span>Red: <strong>${prettyVoteValue(p.voteRedValue) || 'DID NOT VOTE!'}</strong></span>
         <span>Blue: <strong>${prettyVoteValue(p.voteBlueValue) || 'DID NOT VOTE!'}</strong></span>
+        ${p.adminOverride? '(Admin override)' : ''}
       </div>
     </div>
   </div>

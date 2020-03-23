@@ -35,6 +35,11 @@ export class View {
   // local state copy of phase votes for admin to send edited copy for override
   votesCopy: PhaseVote[];
 
+  /* this got a little gnarly. the server sends a snapshot of all state regularly and we dumbly display it, and send
+  requests to edit it. future improvement would be using state management (aurelia-store +rxjs) if it gets too unweildy.
+  ui is not broken out to components either so the dom is a bit messy
+   */
+
   constructor(api) {
     this.api = api;
     this.connecting = true;
@@ -203,12 +208,14 @@ export class View {
 
   private lockinVote() {
     let m: WsMsgSnapshot = View.createWsSnapshot(WebsocketMessageType.voteAction);
-    /* note none of these values are needed other than vote value. just need proper dto */
+
+    // note none of these values are needed other than vote value. just need proper dto
     m.currentVote = {
       phaseType: PhaseType.ban,
       hasVoted: false, phaseNum: 0, validBlueValues: [], validRedValues: [],
       redHasVoted: false,
       blueHasVoted: false,
+      adminOverride: false,
       voteBlueValue: this.selectedVoteValue,
       voteRedValue: this.selectedVoteValue,
     };
@@ -220,8 +227,12 @@ export class View {
     if (!this.champions) {
       return champName;
     }
-    const champNameMatches = c => c.name == champName;
-    const found = R.find(champNameMatches, R.concat(this.champions.melee, this.champions.ranged, this.champions.support));
+    const champNameMatches = c => c.name === champName;
+    // fun fact: R.concat only concats first two arguments yeehaw
+    let allChampCategories = R.concat(this.champions.melee, this.champions.ranged);
+    allChampCategories = R.concat(allChampCategories, this.champions.support);
+    console.log(allChampCategories);
+    const found = R.find(champNameMatches, allChampCategories);
     return found ? found.displayName : champName;
   }
 }

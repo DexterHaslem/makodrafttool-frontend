@@ -56,6 +56,7 @@ export enum PhaseType {
 export class PhaseVote {
   hasVoted: boolean;
   phaseNum: number;
+  adminOverride: boolean;
   phaseType: PhaseType;
   redHasVoted: boolean;
   blueHasVoted: boolean;
