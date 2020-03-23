@@ -41,6 +41,7 @@ export enum WebsocketMessageType {
   serverClose,
   clientReady,
   startVoting,
+  snapshotTimerOnly = 9,
 }
 
 export enum PhaseType {
@@ -60,8 +61,11 @@ export class PhaseVote {
   voteBlueValue: string;
 }
 
-export class WsMsg {
+export class WsMsgBase {
   msgType: WebsocketMessageType;
+}
+
+export class WsMsgSnapshot extends WsMsgBase {
   //sessionType: SessionType;
   setup: DraftSetup;
   draftStarted: boolean;
@@ -80,6 +84,10 @@ export class WsMsg {
   currentPhase: number;
   phases: PhaseVote[];
   draftDone: boolean;
+}
+
+export class WsMsgTimerOnly extends WsMsgBase {
+  voteTimeLeftPretty: string;
 }
 
 export class GameEntity {

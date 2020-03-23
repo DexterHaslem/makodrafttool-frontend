@@ -1,7 +1,16 @@
 import {inject} from 'aurelia-framework';
 import {Api} from '../api';
 import * as R from 'ramda';
-import {Champions, DraftState, PhaseType, SessionType, WebsocketMessageType, WsMsg} from "../models";
+import {
+  Champions,
+  DraftState,
+  PhaseType,
+  SessionType,
+  WebsocketMessageType,
+  WsMsgBase,
+  WsMsgSnapshot,
+  WsMsgTimerOnly
+} from "../models";
 
 const TimerUpdateMs = 150;
 
@@ -15,8 +24,8 @@ export class View {
   connectionFailed: boolean;
   connecting: boolean;
   gotSnapshot: boolean;
-  snapshot: WsMsg;
-  prevSnapshot: WsMsg;
+  snapshot: WsMsgSnapshot;
+  prevSnapshot: WsMsgSnapshot;
   selectedVoteValue: string;
   lockinEnabled: boolean;
 
@@ -61,8 +70,8 @@ export class View {
       this.draftState.sessionType == SessionType.Blue);
   }
 
-  private static createWsMsg(type: WebsocketMessageType): WsMsg {
-    let wsm: WsMsg = {
+  private static createWsSnapshot(type: WebsocketMessageType): WsMsgSnapshot {
+    let wsm: WsMsgSnapshot = {
       voteTimeLeftPretty: '',
       adminConnected: false,
       draftDone: false,
@@ -85,13 +94,13 @@ export class View {
     return wsm;
   }
 
-  private sendWsMsg(m: WsMsg) {
+  private sendWsSnap(m: WsMsgSnapshot) {
     this.ws.send(JSON.stringify(m));
   }
 
   private sendReady() {
-    let wsm: WsMsg = View.createWsMsg(WebsocketMessageType.clientReady);
-    this.sendWsMsg(wsm)
+    let wsm: WsMsgSnapshot = View.createWsSnapshot(WebsocketMessageType.clientReady);
+    this.sendWsSnap(wsm)
   }
 
   private getDraftStateName() {
@@ -142,34 +151,40 @@ export class View {
   }
 
   private onWsMessage(msgEvent: MessageEvent) {
-    let m: WsMsg = JSON.parse(msgEvent.data);
-    // console.log("received websocket message:", m);
-    if (m.msgType == WebsocketMessageType.snapshot) {
+    let mb: WsMsgBase = JSON.parse(msgEvent.data);
+    if (mb.msgType == WebsocketMessageType.snapshot) {
+      const ss: WsMsgSnapshot = <WsMsgSnapshot>mb;
       this.prevSnapshot = this.snapshot;
-      this.snapshot = m;
+      this.snapshot = ss;
       this.gotSnapshot = true;
-      if (m.voteActive) {
+
+      if (ss.voteActive) {
 
         this.lockinEnabled = (
-          (this.draftState.sessionType == SessionType.Red && !m.currentVote.redHasVoted) ||
-          (this.draftState.sessionType == SessionType.Blue && !m.currentVote.blueHasVoted)
+          (this.draftState.sessionType == SessionType.Red && !ss.currentVote.redHasVoted) ||
+          (this.draftState.sessionType == SessionType.Blue && !ss.currentVote.blueHasVoted)
         );
 
         if (!this.lockinEnabled) {
           this.selectedVoteValue =
-            this.draftState.sessionType == SessionType.Red ? m.currentVote.voteRedValue : m.currentVote.voteBlueValue;
+            this.draftState.sessionType == SessionType.Red ? ss.currentVote.voteRedValue : ss.currentVote.voteBlueValue;
         }
       }
+    }
+
+    if (mb.msgType == WebsocketMessageType.snapshotTimerOnly) {
+      const tm: WsMsgTimerOnly = <WsMsgTimerOnly>mb;
+      this.snapshot.voteTimeLeftPretty = tm.voteTimeLeftPretty;
     }
   }
 
   private startDraftVoting() {
-    let m: WsMsg = View.createWsMsg(WebsocketMessageType.startVoting);
-    this.sendWsMsg(m)
+    let m: WsMsgSnapshot = View.createWsSnapshot(WebsocketMessageType.startVoting);
+    this.sendWsSnap(m)
   }
 
   private lockinVote() {
-    let m: WsMsg = View.createWsMsg(WebsocketMessageType.voteAction);
+    let m: WsMsgSnapshot = View.createWsSnapshot(WebsocketMessageType.voteAction);
     /* note none of these values are needed other than vote value. just need proper dto */
     m.currentVote = {
       phaseType: PhaseType.ban,
@@ -179,7 +194,7 @@ export class View {
       voteBlueValue: this.selectedVoteValue,
       voteRedValue: this.selectedVoteValue,
     };
-    this.sendWsMsg(m);
+    this.sendWsSnap(m);
     this.lockinEnabled = false;
   }
 
