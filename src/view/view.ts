@@ -48,11 +48,7 @@ export class View {
   activate(params, route) {
     this.draftCode = params.id;
 
-    this.api.getDraftState(this.draftCode)
-      .then(st => {
-        this.draftState = st;
-        route.navModel.router.title = "BR Draft : " + this.getDraftStateName()
-      });
+    this.api.getDraftState(this.draftCode).then(st => this.draftState = st);
 
     this.ws = this.api.getWs(this.draftCode);
     this.ws.onopen = this.onWsOpen.bind(this);
@@ -94,13 +90,19 @@ export class View {
     return wsm;
   }
 
-  private sendWsSnap(m: WsMsgSnapshot) {
-    this.ws.send(JSON.stringify(m));
+  private sendWsSnap(msgSnapshot: WsMsgSnapshot) {
+    this.ws.send(JSON.stringify(msgSnapshot));
+  }
+
+  private sendWsMsg(mt: WebsocketMessageType) {
+    const mb: WsMsgBase = {
+      msgType: mt,
+    };
+    this.ws.send(JSON.stringify(mb));
   }
 
   private sendReady() {
-    let wsm: WsMsgSnapshot = View.createWsSnapshot(WebsocketMessageType.clientReady);
-    this.sendWsSnap(wsm)
+    this.sendWsMsg(WebsocketMessageType.clientReady);
   }
 
   private getDraftStateName() {
@@ -135,19 +137,17 @@ export class View {
   }
 
   private onWsOpen(ev: Event) {
-    console.log("websocket opened");
     this.connecting = false;
     this.connectionFailed = false;
   }
 
   private onWsClose(ev: CloseEvent) {
-    console.log("websocket closed", ev);
     this.connecting = false;
     this.connectionFailed = true;
   }
 
   private onWsError(ev: Event) {
-    console.log("websocket error: ", ev);
+    console.error("websocket error: ", ev);
   }
 
   private onWsMessage(msgEvent: MessageEvent) {
@@ -158,8 +158,8 @@ export class View {
       this.snapshot = ss;
       this.gotSnapshot = true;
 
-      if (ss.voteActive) {
-
+      /* we can beat draftstate coming in , beware that on spamming refresh */
+      if (ss.voteActive && this.draftState) {
         this.lockinEnabled = (
           (this.draftState.sessionType == SessionType.Red && !ss.currentVote.redHasVoted) ||
           (this.draftState.sessionType == SessionType.Blue && !ss.currentVote.blueHasVoted)
@@ -179,8 +179,7 @@ export class View {
   }
 
   private startDraftVoting() {
-    let m: WsMsgSnapshot = View.createWsSnapshot(WebsocketMessageType.startVoting);
-    this.sendWsSnap(m)
+    this.sendWsMsg(WebsocketMessageType.startVoting);
   }
 
   private lockinVote() {
@@ -198,12 +197,12 @@ export class View {
     this.lockinEnabled = false;
   }
 
-  private prettyMapName(mn: string): string {
-    return mn;
-  }
-
-
   private prettyVoteValue(champName: string): string {
-    return champName;
+    if (!this.champions) {
+      return champName;
+    }
+    const champNameMatches = c => c.name == champName;
+    const found = R.find(champNameMatches, R.concat(this.champions.melee, this.champions.ranged, this.champions.support));
+    return found ? found.displayName : champName;
   }
 }

@@ -46,14 +46,14 @@
 
       <div if.bind="isAdmin()">
         <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }
-          (${snapshot.currentVote.voteRedValue})
+          (<strong>${prettyVoteValue(snapshot.currentVote.voteRedValue)}</strong>)
         </div>
         <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO'
-          }(${snapshot.currentVote.voteBlueValue})
+          }(<strong>${prettyVoteValue(snapshot.currentVote.voteBlueValue)}</strong>)
         </div>
       </div>
 
-      <div show.bind="isCaptain()">
+      <div if.bind="isCaptain()">
         <select value.bind="selectedVoteValue" disabled.bind="!lockinEnabled">
           <option model.bind="none">Choose ..</option>
           <optgroup label="melee">
@@ -71,13 +71,17 @@
       </div>
     </div>
 
+    <div if.bind="isAdmin()">
+      Vote override:
+    </div>
+
     <hr>
     <div>
       <h4>Draft results </h4>
       <div repeat.for="p of snapshot.phases">
         vote# (${p.phaseNum + 1}) - ${p.phaseType}:
-        <span>Red: <strong>${p.voteRedValue || 'DID NOT VOTE!'}</strong></span>
-        <span>Blue: <strong>${p.voteBlueValue || 'DID NOT VOTE!'}</strong></span>
+        <span>Red: <strong>${prettyVoteValue(p.voteRedValue) || 'DID NOT VOTE!'}</strong></span>
+        <span>Blue: <strong>${prettyVoteValue(p.voteBlueValue) || 'DID NOT VOTE!'}</strong></span>
       </div>
     </div>
   </div>
