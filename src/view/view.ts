@@ -5,6 +5,7 @@ import {
   Champions,
   DraftState,
   PhaseType,
+  PhaseVote,
   SessionType,
   WebsocketMessageType,
   WsMsgBase,
@@ -12,7 +13,6 @@ import {
   WsMsgTimerOnly
 } from "../models";
 
-const TimerUpdateMs = 150;
 
 @inject(Api)
 export class View {
@@ -31,6 +31,9 @@ export class View {
 
   champions: Champions;
   validChampions: Champions;
+
+  // local state copy of phase votes for admin to send edited copy for override
+  votesCopy: PhaseVote[];
 
   constructor(api) {
     this.api = api;
@@ -101,6 +104,13 @@ export class View {
     this.ws.send(JSON.stringify(mb));
   }
 
+  private overrideVote(phaseVote: PhaseVote) {
+    let voteOverride = View.createWsSnapshot(WebsocketMessageType.adminVoteOverride);
+    // this is modified locally by admin, just send the whole thing
+    voteOverride.currentVote = phaseVote;
+    this.sendWsSnap(voteOverride);
+  }
+
   private sendReady() {
     this.sendWsMsg(WebsocketMessageType.clientReady);
   }
@@ -128,10 +138,6 @@ export class View {
     }
 
     return "UNKNOWN";
-  }
-
-  getLockInButtonDisabled() {
-    return this.selectedVoteValue === 'none' || !this.lockinEnabled;
   }
 
   getReadyText() {
@@ -166,7 +172,7 @@ export class View {
       this.snapshot = ss;
       this.gotSnapshot = true;
 
-      /* we can beat draftstate coming in , beware that on spamming refresh */
+      // we can beat draftstate coming in , beware that on spamming refresh
       if (ss.voteActive && this.draftState) {
         this.lockinEnabled = (
           (this.draftState.sessionType == SessionType.Red && !ss.currentVote.redHasVoted) ||
@@ -177,6 +183,11 @@ export class View {
           this.selectedVoteValue =
             this.draftState.sessionType == SessionType.Red ? ss.currentVote.voteRedValue : ss.currentVote.voteBlueValue;
         }
+      }
+
+      // copy vote state if we're not actively voting to prevent it bouncing on us
+      if (!ss.voteActive) {
+        this.votesCopy = R.clone(ss.phases);
       }
     }
 

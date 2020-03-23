@@ -45,6 +45,7 @@ export enum WebsocketMessageType {
 
   adminPauseTimer = 11,
   adminResetTimer = 12,
+  adminVoteOverride = 13,
 }
 
 export enum PhaseType {
