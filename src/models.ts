@@ -42,6 +42,9 @@ export enum WebsocketMessageType {
   clientReady,
   startVoting,
   snapshotTimerOnly = 9,
+
+  adminPauseTimer = 11,
+  adminResetTimer = 12,
 }
 
 export enum PhaseType {

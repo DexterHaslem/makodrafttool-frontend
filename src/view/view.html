@@ -35,16 +35,19 @@
       Voting will start once admin starts draft
     </div>
 
-    <div show.bind="snapshot.draftStarted && !snapshot.voteActive && !snapshot.draftDone">
-      Pending next ban/pick... get ready
+    <div if.bind="snapshot.draftStarted && !snapshot.voteActive && !snapshot.draftDone">
+      <h4>Pending next ban/pick... get ready</h4>
     </div>
 
-    <div show.bind="snapshot.voteActive">
-      VOTING ACTIVE!
+    <div if.bind="snapshot.voteActive">
+      <h4>VOTING ACTIVE!</h4>
       <h3>${snapshot.currentVote.phaseType == 'ban' ? 'BANNING' : 'PICKING'}</h3>
-      <strong>${snapshot.voteTimeLeftPretty} seconds left ..</strong>
-
+      <strong>${snapshot.voteTimeLeftPretty} seconds left .. ${snapshot.votePaused ? '(PAUSED)' : ''}</strong>
       <div if.bind="isAdmin()">
+        <div>
+          <button click.trigger="togglePauseTimer()">${snapshot.votePaused ? 'Unpause' : 'Pause'} vote</button>
+          <button click.trigger="resetTimer()">Reset vote timer</button>
+        </div>
         <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }
           (<strong>${prettyVoteValue(snapshot.currentVote.voteRedValue)}</strong>)
         </div>
@@ -53,8 +56,8 @@
         </div>
       </div>
 
-      <div if.bind="isCaptain()">
-        <select value.bind="selectedVoteValue" disabled.bind="!lockinEnabled">
+      <div show.bind="isCaptain()">
+        <select disabled.bind="!lockinEnabled && !snapshot.votePaused" value.bind="selectedVoteValue">
           <option model.bind="none">Choose ..</option>
           <optgroup label="melee">
             <option repeat.for="mc of validChampions.melee" model.bind="mc.name">${mc.displayName}</option>

@@ -105,6 +105,14 @@ export class View {
     this.sendWsMsg(WebsocketMessageType.clientReady);
   }
 
+  private togglePauseTimer() {
+    this.sendWsMsg(WebsocketMessageType.adminPauseTimer);
+  }
+
+  private resetTimer() {
+    this.sendWsMsg(WebsocketMessageType.adminResetTimer);
+  }
+
   private getDraftStateName() {
     if (this.draftState) {
       switch (this.draftState.sessionType) {
