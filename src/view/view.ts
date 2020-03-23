@@ -17,9 +17,6 @@ export class View {
   gotSnapshot: boolean;
   snapshot: WsMsg;
   prevSnapshot: WsMsg;
-  voteActiveTimer: any;
-  voteStartedAt: number;
-  countdownVal: string;
   selectedVoteValue: string;
   lockinEnabled: boolean;
 
@@ -30,7 +27,10 @@ export class View {
     this.api = api;
     this.connecting = true;
     this.selectedVoteValue = 'none';
-    this.api.getChampions().then(c => this.champions = c);
+    this.api.getChampions().then(c => {
+      this.champions = c;
+      this.validChampions = R.clone(c);
+    });
 
     // enable by default incase they refresh
     this.lockinEnabled = true;
@@ -147,18 +147,19 @@ export class View {
     if (m.msgType == WebsocketMessageType.snapshot) {
       this.prevSnapshot = this.snapshot;
       this.snapshot = m;
-      this.checkTransitions();
       this.gotSnapshot = true;
-    }
-  }
+      if (m.voteActive) {
 
-  private checkTransitions() {
-    if (!this.prevSnapshot) {
-      return;
-    }
+        this.lockinEnabled = (
+          (this.draftState.sessionType == SessionType.Red && !m.currentVote.redHasVoted) ||
+          (this.draftState.sessionType == SessionType.Blue && !m.currentVote.blueHasVoted)
+        );
 
-    if (!this.prevSnapshot.voteActive && this.snapshot.voteActive) {
-      this.setupNewVote();
+        if (!this.lockinEnabled) {
+          this.selectedVoteValue =
+            this.draftState.sessionType == SessionType.Red ? m.currentVote.voteRedValue : m.currentVote.voteBlueValue;
+        }
+      }
     }
   }
 
@@ -182,51 +183,12 @@ export class View {
     this.lockinEnabled = false;
   }
 
-  /*
-  private timerCallback() {
-    if (!this.snapshot || !this.snapshot.voteActive || this.snapshot.votePaused) {
-      return;
-    }
-    let now = new Date().getTime();
-    let dif = now - this.voteStartedAt;
-    const secsDiff = Math.abs(dif / 1000);
-    const maxSecs = this.draftState.setup.votingSecs[this.snapshot.currentVote.phaseNum];
-    const remaining = maxSecs - secsDiff;
-    this.countdownVal = remaining.toFixed(2);
-    if (remaining <= 0) {
-      clearInterval(this.voteActiveTimer);
-    }
-  } */
+  private prettyMapName(mn: string): string {
+    return mn;
+  }
+
 
   private prettyVoteValue(champName: string): string {
     return champName;
-  }
-
-  private setupNewVote() {
-    this.voteStartedAt = new Date().getTime();
-    this.lockinEnabled = true;
-    // note: timer values are sent by server
-    // this.voteActiveTimer = setInterval(this.timerCallback.bind(this), TimerUpdateMs);
-    this.selectedVoteValue = 'none';
-
-    this.validChampions = {
-      melee: R.clone(this.champions.melee),
-      ranged: R.clone(this.champions.ranged),
-      support: R.clone(this.champions.support)
-    };
-
-    /* filter champs to valid selections */
-    if (this.isCaptain()) {
-      this.filterValidChamps(this.draftState.sessionType == SessionType.Blue ?
-        this.snapshot.currentVote.validBlueValues : this.snapshot.currentVote.validRedValues);
-    }
-  }
-
-  private filterValidChamps(validValues: string[]) {
-    // this sorta stinks, maybe breaking out by category is the worst way to do this
-    const champValid = c => R.any(v => v === c.name, validValues);
-    this.validChampions.melee = R.filter(champValid, this.validChampions.melee);
-    this.validChampions.ranged = R.filter(champValid, this.validChampions.ranged);
-    this.validChampions.support = R.filter(champValid, this.validChampions.support);
   }
 }

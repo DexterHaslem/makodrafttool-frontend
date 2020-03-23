@@ -35,11 +35,11 @@
       Voting will start once admin starts draft
     </div>
 
-    <div if.bind="snapshot.draftStarted && !snapshot.voteActive">
+    <div show.bind="snapshot.draftStarted && !snapshot.voteActive && !snapshot.draftDone">
       Pending next ban/pick... get ready
     </div>
 
-    <div if.bind="snapshot.voteActive">
+    <div show.bind="snapshot.voteActive">
       VOTING ACTIVE!
       <h3>${snapshot.currentVote.phaseType == 'ban' ? 'BANNING' : 'PICKING'}</h3>
       <strong>${snapshot.voteTimeLeftPretty} seconds left ..</strong>
@@ -53,7 +53,7 @@
         </div>
       </div>
 
-      <div if.bind="isCaptain()">
+      <div show.bind="isCaptain()">
         <select value.bind="selectedVoteValue" disabled.bind="!lockinEnabled">
           <option model.bind="none">Choose ..</option>
           <optgroup label="melee">
