@@ -18,14 +18,16 @@ const title = 'BR Draft';
 const outDir = path.resolve(__dirname, project.platform.output);
 const srcDir = path.resolve(__dirname, 'src');
 const nodeModulesDir = path.resolve(__dirname, 'node_modules');
+//const baseUrl = '/';
+// !!buildurl
 const baseUrl = '/static/';
 
 const cssRules = [
-  { loader: 'css-loader' },
+  {loader: 'css-loader'},
 ];
 
 
-module.exports = ({ production } = {}, {extractCss, analyze, tests, hmr, port, host } = {}) => ({
+module.exports = ({production} = {}, {extractCss, analyze, tests, hmr, port, host} = {}) => ({
   resolve: {
     extensions: ['.ts', '.js'],
     modules: [srcDir, 'node_modules'],
