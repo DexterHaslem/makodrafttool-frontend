@@ -1,9 +1,12 @@
 import {HttpClient, json} from 'aurelia-fetch-client';
 import {inject} from 'aurelia-framework';
 
-const BASE_URL = 'http://localhost:8081/';
-const BASE_WS_URL = 'ws://localhost:8081/';
+// change this (eg, with a build step) to deployed location of API
+//const BASE_URL = 'http://localhost:8081/';
+//const BASE_WS_URL = 'ws://localhost:8081/';
 
+const BASE_URL = 'http://52.90.59.185:8081/';
+const BASE_WS_URL = 'ws://52.90.59.185:8081/';
 
 @inject(HttpClient)
 export class Api {
@@ -14,6 +17,10 @@ export class Api {
     http.configure(cfg =>
       cfg.withBaseUrl(BASE_URL)
     );
+  }
+
+  getURL(endpoint) {
+    return `${BASE_URL}${endpoint}`;
   }
 
   createDraft(nd) {

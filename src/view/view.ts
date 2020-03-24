@@ -231,7 +231,6 @@ export class View {
     // fun fact: R.concat only concats first two arguments yeehaw
     let allChampCategories = R.concat(this.champions.melee, this.champions.ranged);
     allChampCategories = R.concat(allChampCategories, this.champions.support);
-    console.log(allChampCategories);
     const found = R.find(champNameMatches, allChampCategories);
     return found ? found.displayName : champName;
   }

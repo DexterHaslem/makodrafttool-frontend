@@ -42,8 +42,9 @@ export class Admin {
     });
   }
 
-  getLink(v) {
-    /* TODO: figure out way to do this proper from router */
-    return "#/v/" + v;
+  getViewLink(code) {
+    /* NOTE: relies on webpack.config.js baseUrl .. which isnt exported. blah */
+    const baseUrl = 'static/';
+    return this.api.getURL(`${baseUrl}#/v/${code}`);
   }
 }
