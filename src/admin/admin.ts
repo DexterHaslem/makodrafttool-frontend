@@ -45,7 +45,8 @@ export class Admin {
   getViewLink(code) {
     /* NOTE: relies on webpack.config.js baseUrl .. which isnt exported. blah */
     // !! buildurl
-    const baseUrl = 'static/';
-    return this.api.getURL(`${baseUrl}#/v/${code}`);
+    const baseUrl = ''; // local webpack
+    // const baseUrl = 'static/'; // echo server hosted
+    return `${baseUrl}#/v/${code}`;
   }
 }

@@ -2,7 +2,10 @@ import {HttpClient, json} from 'aurelia-fetch-client';
 import {inject} from 'aurelia-framework';
 
 // !!buildurl
+// TODO: make this more dynamic if a bother
+
 // change this (eg, with a build step) to deployed location of API
+// local go server
 const BASE_URL = 'http://localhost:8081/';
 const BASE_WS_URL = 'ws://localhost:8081/';
 
