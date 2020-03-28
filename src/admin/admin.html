@@ -84,9 +84,10 @@
         <div><strong>RESULTS:</strong> <input class="form-control" type="text" value.bind="results"><a
           href.bind="getViewLink(results)" target="_blank">(Open results Link in new tab)</a></div>
       </div>
-
-
     </form>
+
+    <button class="btn btn-warning m-t-3" click.trigger="resetDraft()" if.bind="draftCreated">Reset & Create new draft
+    </button>
 
   </div>
 

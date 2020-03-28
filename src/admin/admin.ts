@@ -45,6 +45,10 @@ export class Admin {
     });
   }
 
+  resetDraft() {
+    this.draftCreated = false;
+  }
+
   getViewLink(code) {
     /* NOTE: relies on webpack.config.js baseUrl .. which isnt exported. blah */
     // !! buildurl

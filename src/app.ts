@@ -6,16 +6,16 @@ export class App {
 
   configureRouter(config: RouterConfiguration, router: Router): void {
     this.router = router;
-    config.title = 'brdraft';
+    config.title = 'MDT';
     config.map([
       {route: '', name: 'home', moduleId: PLATFORM.moduleName('home'), title: "home"},
       {
         route: 'admin',
         name: 'admin',
         moduleId: PLATFORM.moduleName('admin/admin'),
-        title: "Create Draft",
+        title: "Create",
       },
-      {route: 'v/:id/', name: 'view', moduleId: PLATFORM.moduleName('view/view'), title: "BR Draft view"},
+      {route: 'v/:id/', name: 'view', moduleId: PLATFORM.moduleName('view/view'), title: "View"},
     ]);
   }
 }

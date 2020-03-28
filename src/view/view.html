@@ -17,6 +17,7 @@
       Red team name: <strong>${draftState.setup.redName}</strong>
       Blue team name: <strong>${draftState.setup.blueName}</strong>
     </div>
+
     <div>Admin connected: ${snapshot.adminConnected ? 'TRUE' : 'FALSE'}</div>
     <div>red captain connected: ${snapshot.redConnected ? 'TRUE' : 'FALSE'}</div>
     <div>blue captain connected: ${snapshot.blueConnected ? 'TRUE' : 'FALSE'}</div>
@@ -29,7 +30,7 @@
     </div>
 
     <div if.bind="isCaptain() && !snapshot.draftStarted">
-      <button click.trigger="sendReady()">Ready</button>
+      <button class="btn btn-primary" click.trigger="sendReady()">Ready</button>
     </div>
 
     <div if.bind="snapshot.draftStarted && !snapshot.voteActive && !snapshot.draftDone">
@@ -43,38 +44,49 @@
       <div if.bind="!snapshot.voteUnlimitedTime">
         <strong>${snapshot.voteTimeLeftPretty} seconds left .. ${snapshot.votePaused ? '(PAUSED)' : ''}</strong>
       </div>
+
       <div if.bind="isAdmin()">
-        <button click.trigger="togglePauseTimer()">${snapshot.votePaused ? 'Unpause' : 'Pause'} vote</button>
-        <button click.trigger="resetTimer()">Reset vote timer</button>
+        <button class="btn btn-warning" click.trigger="togglePauseTimer()">${snapshot.votePaused ? 'Unpause' : 'Pause'}
+          vote
+        </button>
+        <button class="btn btn-danger" click.trigger="resetTimer()">Reset vote timer</button>
       </div>
 
       <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }</div>
       <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO' }</div>
 
 
-      <div show.bind="isCaptain()">
-        <select disabled.bind="!lockinEnabled && !snapshot.votePaused" value.bind="selectedVoteValue">
-          <option model.bind="none">Choose ..</option>
-          <optgroup label="melee">
-            <option disabled.bind="getChampDisabled(mc)" model.bind="mc.name" repeat.for="mc of validChampions.melee">
-              ${mc.displayName}
-            </option>
-          </optgroup>
-          <optgroup label="ranged">
-            <option disabled.bind="getChampDisabled(mc)" model.bind="rc.name" repeat.for="rc of validChampions.ranged">
-              ${rc.displayName}
-            </option>
-          </optgroup>
-          <optgroup label="support">
-            <option disabled.bind="getChampDisabled(mc)" model.bind="sc.name" repeat.for="sc of validChampions.support">
-              ${sc.displayName}
-            </option>
-          </optgroup>
-        </select>
-        <button click.trigger="lockinVote()" disabled.bind="selectedVoteValue == 'none' || !lockinEnabled">
-          Lock in
-        </button>
-      </div>
+      <form show.bind="isCaptain()">
+        ${snapshot.currentVote.phaseType == 'ban' ? 'Banning' : 'Picking'} ...
+
+        <div class="form-row">
+          <select class="form-control form-group col-md-5 m-3" disabled.bind="!lockinEnabled && !snapshot.votePaused"
+                  value.bind="selectedVoteValue">
+            <option model.bind="none">Choose ..</option>
+            <optgroup label="melee">
+              <option disabled.bind="getChampDisabled(mc)" model.bind="mc.name" repeat.for="mc of validChampions.melee">
+                ${mc.displayName}
+              </option>
+            </optgroup>
+            <optgroup label="ranged">
+              <option disabled.bind="getChampDisabled(mc)" model.bind="rc.name"
+                      repeat.for="rc of validChampions.ranged">
+                ${rc.displayName}
+              </option>
+            </optgroup>
+            <optgroup label="support">
+              <option disabled.bind="getChampDisabled(mc)" model.bind="sc.name"
+                      repeat.for="sc of validChampions.support">
+                ${sc.displayName}
+              </option>
+            </optgroup>
+          </select>
+          <button class="btn-lg btn-primary col-md-4 form-group m-3" click.trigger="lockinVote()"
+                  disabled.bind="selectedVoteValue == 'none' || !lockinEnabled">
+            Lock in
+          </button>
+        </div>
+      </form>
     </div>
 
     <hr>
@@ -131,6 +143,7 @@
           </td>
 
           <td><input checked.bind="p.adminOverride" class="form-check-input" disabled="disabled" type="checkbox"></td>
+
           <td if.bind="isAdmin()">
             <button class="btn btn-danger" click.trigger="overrideVote(p)">Override vote</button>
           </td>
