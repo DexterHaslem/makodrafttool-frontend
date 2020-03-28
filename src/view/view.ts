@@ -2,6 +2,7 @@ import {inject} from 'aurelia-framework';
 import {Api} from '../api';
 import * as R from 'ramda';
 import {
+  Champion,
   Champions,
   DraftState,
   PhaseType,
@@ -175,37 +176,15 @@ export class View {
     return `#/v/${this.draftState.viewerCode}`;
   }
 
-  private onWsMessage(msgEvent: MessageEvent) {
-    let mb: WsMsgBase = JSON.parse(msgEvent.data);
-    if (mb.msgType == WebsocketMessageType.snapshot) {
-      const ss: WsMsgSnapshot = <WsMsgSnapshot>mb;
-      this.prevSnapshot = this.snapshot;
-      this.snapshot = ss;
-      this.gotSnapshot = true;
-
-      // we can beat draftstate coming in , beware that on spamming refresh
-      if (ss.voteActive && this.draftState) {
-        this.lockinEnabled = (
-          (this.draftState.sessionType == SessionType.Red && !ss.currentVote.redHasVoted) ||
-          (this.draftState.sessionType == SessionType.Blue && !ss.currentVote.blueHasVoted)
-        );
-
-        if (!this.lockinEnabled) {
-          this.selectedVoteValue =
-            this.draftState.sessionType == SessionType.Red ? ss.currentVote.voteRedValue : ss.currentVote.voteBlueValue;
-        }
-      }
-
-      // copy vote state if we're not actively voting to prevent it bouncing on us
-      if (!ss.voteActive) {
-        this.votesCopy = R.clone(ss.phases);
-      }
+  getChampDisabled(c: Champion): boolean {
+    if (!c || !this.snapshot || !this.draftState || !this.snapshot.currentVote) {
+      return false;
     }
 
-    if (mb.msgType == WebsocketMessageType.snapshotTimerOnly) {
-      const tm: WsMsgTimerOnly = <WsMsgTimerOnly>mb;
-      this.snapshot.voteTimeLeftPretty = tm.voteTimeLeftPretty;
-    }
+    const validChoices = this.draftState.sessionType == SessionType.Red ? this.snapshot.currentVote.validRedValues :
+      this.snapshot.currentVote.validBlueValues;
+
+    return R.all(vn => c.name !== vn, validChoices);
   }
 
   private startDraftVoting() {
@@ -240,4 +219,48 @@ export class View {
     const found = R.find(champNameMatches, allChampCategories);
     return found ? found.displayName : champName;
   }
+
+  private onWsMessage(msgEvent: MessageEvent) {
+    let mb: WsMsgBase = JSON.parse(msgEvent.data);
+    if (mb.msgType == WebsocketMessageType.snapshot) {
+      const ss: WsMsgSnapshot = <WsMsgSnapshot>mb;
+      this.prevSnapshot = this.snapshot;
+      this.snapshot = ss;
+      this.gotSnapshot = true;
+
+      // we can beat draftstate coming in , beware that on spamming refresh
+      if (ss.voteActive && this.draftState) {
+        this.lockinEnabled = (
+          (this.draftState.sessionType == SessionType.Red && !ss.currentVote.redHasVoted) ||
+          (this.draftState.sessionType == SessionType.Blue && !ss.currentVote.blueHasVoted)
+        );
+
+        if (!this.lockinEnabled) {
+          this.selectedVoteValue =
+            this.draftState.sessionType == SessionType.Red ? ss.currentVote.voteRedValue : ss.currentVote.voteBlueValue;
+        }
+
+        //this.filterValidChamps(this.draftState.sessionType == SessionType.Red ? ss.currentVote.validRedValues : ss.currentVote.validBlueValues);
+      }
+
+      // copy vote state if we're not actively voting to prevent it bouncing on us
+      if (!ss.voteActive) {
+        this.votesCopy = R.clone(ss.phases);
+        this.selectedVoteValue = 'none';
+      }
+    }
+
+    if (mb.msgType == WebsocketMessageType.snapshotTimerOnly) {
+      const tm: WsMsgTimerOnly = <WsMsgTimerOnly>mb;
+      this.snapshot.voteTimeLeftPretty = tm.voteTimeLeftPretty;
+    }
+  }
+
+  /* do not add/remove from options, simply disable above
+  private filterValidChamps(validNames : string[]) {
+    // this ends up a little nasty due to the categories
+    this.validChampions.melee = [];
+    this.validChampions.ranged = [];
+    this.validChampions.support = [];
+  }*/
 }

@@ -57,13 +57,19 @@
         <select disabled.bind="!lockinEnabled && !snapshot.votePaused" value.bind="selectedVoteValue">
           <option model.bind="none">Choose ..</option>
           <optgroup label="melee">
-            <option repeat.for="mc of validChampions.melee" model.bind="mc.name">${mc.displayName}</option>
+            <option disabled.bind="getChampDisabled(mc)" model.bind="mc.name" repeat.for="mc of validChampions.melee">
+              ${mc.displayName}
+            </option>
           </optgroup>
           <optgroup label="ranged">
-            <option repeat.for="rc of validChampions.ranged" model.bind="rc.name">${rc.displayName}</option>
+            <option disabled.bind="getChampDisabled(mc)" model.bind="rc.name" repeat.for="rc of validChampions.ranged">
+              ${rc.displayName}
+            </option>
           </optgroup>
           <optgroup label="support">
-            <option repeat.for="sc of validChampions.support" model.bind="sc.name">${sc.displayName}</option>
+            <option disabled.bind="getChampDisabled(mc)" model.bind="sc.name" repeat.for="sc of validChampions.support">
+              ${sc.displayName}
+            </option>
           </optgroup>
         </select>
         <button click.trigger="lockinVote()" disabled.bind="selectedVoteValue == 'none' || !lockinEnabled">
@@ -72,50 +78,67 @@
       </div>
     </div>
 
-    <div if.bind="isAdmin() && draftState">
-      admin vote override:
-      <div class="admin-override" repeat.for="p of votesCopy">
-        <span>Phase #${p.phaseNum + 1}</span>
-
-        Change <strong>Red</strong> vote:
-        <select value.bind="p.voteRedValue">
-          <option model.bind="none">(none)</option>
-          <optgroup label="melee">
-            <option model.bind="mc.name" repeat.for="mc of validChampions.melee">${mc.displayName}</option>
-          </optgroup>
-          <optgroup label="ranged">
-            <option model.bind="rc.name" repeat.for="rc of validChampions.ranged">${rc.displayName}</option>
-          </optgroup>
-          <optgroup label="support">
-            <option model.bind="sc.name" repeat.for="sc of validChampions.support">${sc.displayName}</option>
-          </optgroup>
-        </select>
-        Change <strong>Blue</strong> vote:
-        <select value.bind="p.voteBlueValue">
-          <option model.bind="none">(none)</option>
-          <optgroup label="melee">
-            <option model.bind="mc.name" repeat.for="mc of validChampions.melee">${mc.displayName}</option>
-          </optgroup>
-          <optgroup label="ranged">
-            <option model.bind="rc.name" repeat.for="rc of validChampions.ranged">${rc.displayName}</option>
-          </optgroup>
-          <optgroup label="support">
-            <option model.bind="sc.name" repeat.for="sc of validChampions.support">${sc.displayName}</option>
-          </optgroup>
-        </select>
-        <button click.trigger="overrideVote(p)">Override Phase vote</button>
-      </div>
-    </div>
-
     <hr>
+
     <div>
       <h4>Draft selection ${snapshot.draftDone ? '(FINISHED)' : ''}</h4>
-      <div repeat.for="p of snapshot.phases">
-        vote# (${p.phaseNum + 1}) - ${p.phaseType}:
-        <span>Red: <strong>${prettyVoteValue(p.voteRedValue) || 'None'}</strong></span>
-        <span>Blue: <strong>${prettyVoteValue(p.voteBlueValue) || 'None'}</strong></span>
-        ${p.adminOverride? '(Admin override)' : ''}
-      </div>
+      <table class="table">
+        <thead class="thead-light">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Ban/pick</th>
+          <th scope="col">Red (${draftState.setup.redName})</th>
+          <th scope="col">Blue (${draftState.setup.blueName})</th>
+          <th scope="col">Admin Adjusted?</th>
+          <th if.bind="isAdmin()">Override</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr repeat.for="p of snapshot.phases">
+          <th scope="row">${p.phaseNum + 1}</th>
+          <td>${p.phaseType}</td>
+
+          <td if.bind="!isAdmin()">${prettyVoteValue(p.voteRedValue) || 'None'}</td>
+          <td if.bind="isAdmin()">
+            <select value.bind="p.voteRedValue">
+              <option model.bind="none">(none)</option>
+              <optgroup label="melee">
+                <option model.bind="mc.name" repeat.for="mc of champions.melee">${mc.displayName}</option>
+              </optgroup>
+              <optgroup label="ranged">
+                <option model.bind="rc.name" repeat.for="rc of champions.ranged">${rc.displayName}</option>
+              </optgroup>
+              <optgroup label="support">
+                <option model.bind="sc.name" repeat.for="sc of champions.support">${sc.displayName}</option>
+              </optgroup>
+            </select>
+          </td>
+          <td if.bind="!isAdmin()">${prettyVoteValue(p.voteBlueValue) || 'None'}</td>
+          <td if.bind="isAdmin()">
+            <select value.bind="p.voteBlueValue">
+              <option model.bind="none">(none)</option>
+              <optgroup label="melee">
+                <option model.bind="mc.name" repeat.for="mc of champions.melee">${mc.displayName}</option>
+              </optgroup>
+              <optgroup label="ranged">
+                <option model.bind="rc.name" repeat.for="rc of champions.ranged">${rc.displayName}</option>
+              </optgroup>
+              <optgroup label="support">
+                <option model.bind="sc.name" repeat.for="sc of champions.support">${sc.displayName}</option>
+              </optgroup>
+            </select>
+          </td>
+
+          <td><input checked.bind="p.adminOverride" class="form-check-input" disabled="disabled" type="checkbox"></td>
+          <td if.bind="isAdmin()">
+            <button class="btn btn-danger" click.trigger="overrideVote(p)">Override vote</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
   </div>
 </template>

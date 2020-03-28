@@ -1,90 +1,92 @@
 <template>
-  <style>
-    .setupform {
-      display: flex;
-      flex-direction: row;
-    }
-
-    .setuprow {
-
-    }
-
-    .draftcode {
-      width: 185px;
-    }
-
-  </style>
   <div>
-    <h2>Create new draft</h2>
+    <h4>Create new draft</h4>
 
-    <div class="setupform">
-      <form submit.trigger="onCreate()" if.bind="!draftCreated">
-        <div class="setuprow">
-          <label>Draft name</label>
-          <input type="text" value.bind="draft.setup.name">
+    <form submit.trigger="onCreate()" if.bind="!draftCreated">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="name">Draft name</label>
+          <input class="form-control" id="name" type="text" value.bind="draft.setup.name">
         </div>
-        <div class="setuprow">
-          <label>Map</label>
-          <select value.bind="draft.setup.mapName">
-            <option repeat.for="m of maps" model.bind="m.displayName">${m.displayName}</option>
+        <div class="form-group col-md-6">
+          <label for="map">Map</label>
+          <select class="form-control" id="map" value.bind="draft.setup.mapName">
+            <option model.bind="m.displayName" repeat.for="m of maps">${m.displayName}</option>
           </select>
         </div>
-
-        <div class="setuprow">
-          <label>Blue team name</label>
-          <input type="text" value.bind="draft.setup.blueName">
-        </div>
-
-        <div class="setuprow">
-          <label>Red team name</label>
-          <input type="text" value.bind="draft.setup.redName">
-        </div>
-
-        <em>Use 0 seconds for unlimited vote time</em>
-        <div class="setuprow">
-          <label>Vote 1 - Ban #1 seconds</label>
-          <input max="100" min="0" type="number" value.bind="draft.setup.votingSecs[0]">
-        </div>
-        <div class="setuprow">
-          <label>Vote 2 - Pick #1 seconds</label>
-          <input max="100" min="0" type="number" value.bind="draft.setup.votingSecs[1]">
-        </div>
-        <div class="setuprow">
-          <label>Vote 3 - Pick #2 seconds</label>
-          <input max="100" min="0" type="number" value.bind="draft.setup.votingSecs[2]">
-        </div>
-        <div class="setuprow">
-          <label>Vote 4 - Ban #2 seconds</label>
-          <input max="100" min="0" type="number" value.bind="draft.setup.votingSecs[3]">
-        </div>
-        <div class="setuprow">
-          <label>Vote 5 - Pick #3 seconds</label>
-          <input max="100" min="0" type="number" value.bind="draft.setup.votingSecs[4]">
-        </div>
-
-        <div class="setuprow">
-          <label>Delay between next vote period</label>
-          <input max="10" min="0" type="number" value.bind="draft.setup.phaseDelaySecs">
-        </div>
-
-        <button type="submit">Create</button>
-      </form>
-    </div>
-    <div if.bind="draftCreated">
-      Draft <strong>${draft.setup.name}</strong> on map ${draft.setup.mapName} created! codes for links:
-      <div id="links-div" with.bind="draft.ids">
-        <div><strong>ADMIN</strong>: <input class="draftcode" type="text" value.bind="admin"><a
-          href.bind="getViewLink(admin)" target="_blank">(Link)</a></div>
-        <div><strong>RED CAPT</strong>: <input class="draftcode" type="text" value.bind="red"><a
-          href.bind="getViewLink(red)" target="_blank">(Link)</a></div>
-        <div><strong>BLUE CAPT:</strong> <input class="draftcode" type="text" value.bind="blue"><a
-          href.bind="getViewLink(blue)" target="_blank">(Link)</a></div>
-        <div><strong>RESULTS:</strong> <input class="draftcode" type="text" value.bind="results"><a
-          href.bind="getViewLink(results)" target="_blank">(Link)</a></div>
       </div>
 
-      <em>warning </em> only one admin/red/blue capt link active at a time (most recently opened)
-    </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="bluename">Blue team name</label>
+          <input class="form-control" id="bluename" type="text" value.bind="draft.setup.blueName">
+        </div>
+
+        <div class="form-group col-md-6">
+          <label for="redname">Red team name</label>
+          <input class="form-control" id="redname" type="text" value.bind="draft.setup.redName">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="ban0secs">Vote 1 - Ban #1 seconds</label>
+          <input class="form-control" id="ban0secs" max="100" min="0" type="number"
+                 value.bind="draft.setup.votingSecs[0]">
+          <small>Use 0 seconds for unlimited vote time!</small>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="ban1secs">Vote 2 - Pick #1 seconds</label>
+          <input class="form-control" id="ban1secs" max="100" min="0" type="number"
+                 value.bind="draft.setup.votingSecs[1]">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="ban2secs">Vote 3 - Pick #2 seconds</label>
+          <input class="form-control" id="ban2secs" max="100" min="0" type="number"
+                 value.bind="draft.setup.votingSecs[2]">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="ban3secs">Vote 4 - Ban #2 seconds</label>
+          <input class="form-control" id="ban3secs" max="100" min="0" type="number"
+                 value.bind="draft.setup.votingSecs[3]">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="ban4secs">Vote 5 - Pick #3 seconds</label>
+          <input class="form-control" id="ban4secs" max="100" min="0" type="number"
+                 value.bind="draft.setup.votingSecs[4]">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="delay">Delay between next vote period</label>
+        <input class="form-control" id="delay" max="5" min="0" type="number" value.bind="draft.setup.phaseDelaySecs">
+      </div>
+
+      <button class="btn btn-primary" type="submit">Create</button>
+    </form>
+
+    <form class="form-group" if.bind="draftCreated">
+      <div class="alert alert-warning" role="alert">
+        Note only one admin/red/blue capt link is active at a time (most recently opened)
+      </div>
+
+      Draft <strong>${draft.setup.name}</strong> on map ${draft.setup.mapName} created! codes for links:
+      <div id="links-div" with.bind="draft.ids">
+        <div><strong>ADMIN</strong>: <input class="form-control" type="text" value.bind="admin"><a
+          href.bind="getViewLink(admin)" target="_blank">(Open ADMIN Link in new tab)</a></div>
+        <div><strong>RED CAPT</strong>: <input class="form-control" type="text" value.bind="red"><a
+          href.bind="getViewLink(red)" target="_blank">(Open Red Captain Link in new tab)</a></div>
+        <div><strong>BLUE CAPT:</strong> <input class="form-control" type="text" value.bind="blue"><a
+          href.bind="getViewLink(blue)" target="_blank">(Open Blue Captain Link in new tab)</a></div>
+        <div><strong>RESULTS:</strong> <input class="form-control" type="text" value.bind="results"><a
+          href.bind="getViewLink(results)" target="_blank">(Open results Link in new tab)</a></div>
+      </div>
+
+
+    </form>
 
   </div>
 
