@@ -18,6 +18,8 @@ export class DraftSetup {
 
 export class DraftState {
   sessionType: SessionType;
+  viewerCode: string;
+  phases: PhaseVote[];
   setup: DraftSetup;
 }
 

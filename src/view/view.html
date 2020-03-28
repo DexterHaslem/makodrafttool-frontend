@@ -11,6 +11,8 @@
     <h3>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}</h3>
     <h3>Viewing as ${getDraftStateName()}</h3>
 
+    <a href.bind="getViewingLink()" if.bind="draftState">Readonly viewing link</a>
+
     <div>
       Red team name: <strong>${draftState.setup.redName}</strong>
       Blue team name: <strong>${draftState.setup.blueName}</strong>
@@ -107,11 +109,11 @@
 
     <hr>
     <div>
-      <h4>Draft results </h4>
+      <h4>Draft selection ${snapshot.draftDone ? '(FINISHED)' : ''}</h4>
       <div repeat.for="p of snapshot.phases">
         vote# (${p.phaseNum + 1}) - ${p.phaseType}:
-        <span>Red: <strong>${prettyVoteValue(p.voteRedValue) || 'DID NOT VOTE!'}</strong></span>
-        <span>Blue: <strong>${prettyVoteValue(p.voteBlueValue) || 'DID NOT VOTE!'}</strong></span>
+        <span>Red: <strong>${prettyVoteValue(p.voteRedValue) || 'None'}</strong></span>
+        <span>Blue: <strong>${prettyVoteValue(p.voteBlueValue) || 'None'}</strong></span>
         ${p.adminOverride? '(Admin override)' : ''}
       </div>
     </div>

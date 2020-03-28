@@ -170,6 +170,11 @@ export class View {
     console.error("websocket error: ", ev);
   }
 
+  public getViewingLink() {
+    // !! baseUrl
+    return `#/v/${this.draftState.viewerCode}`;
+  }
+
   private onWsMessage(msgEvent: MessageEvent) {
     let mb: WsMsgBase = JSON.parse(msgEvent.data);
     if (mb.msgType == WebsocketMessageType.snapshot) {
