@@ -30,7 +30,6 @@
 
     <div if.bind="isCaptain() && !snapshot.draftStarted">
       <button click.trigger="sendReady()">Ready</button>
-      Voting will start once admin starts draft
     </div>
 
     <div if.bind="snapshot.draftStarted && !snapshot.voteActive && !snapshot.draftDone">
