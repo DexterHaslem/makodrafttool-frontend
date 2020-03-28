@@ -38,7 +38,10 @@
     <div if.bind="snapshot.voteActive">
       <h4>VOTING ACTIVE!</h4>
       <h2>${snapshot.currentVote.phaseType == 'ban' ? 'BANNING' : 'PICKING'} ... </h2>
-      <strong>${snapshot.voteTimeLeftPretty} seconds left .. ${snapshot.votePaused ? '(PAUSED)' : ''}</strong>
+
+      <div if.bind="!snapshot.voteUnlimitedTime">
+        <strong>${snapshot.voteTimeLeftPretty} seconds left .. ${snapshot.votePaused ? '(PAUSED)' : ''}</strong>
+      </div>
       <div if.bind="isAdmin()">
         <button click.trigger="togglePauseTimer()">${snapshot.votePaused ? 'Unpause' : 'Pause'} vote</button>
         <button click.trigger="resetTimer()">Reset vote timer</button>
@@ -46,6 +49,7 @@
 
       <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }</div>
       <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO' }</div>
+
 
       <div show.bind="isCaptain()">
         <select disabled.bind="!lockinEnabled && !snapshot.votePaused" value.bind="selectedVoteValue">

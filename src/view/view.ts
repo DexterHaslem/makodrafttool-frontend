@@ -84,6 +84,7 @@ export class View {
       blueReady: false,
       currentPhase: 0,
       currentVote: null,
+      voteUnlimitedTime: false,
       msgType: type,
       phases: [],
       redConnected: false,

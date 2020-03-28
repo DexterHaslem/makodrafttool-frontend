@@ -40,30 +40,31 @@
           <input type="text" value.bind="draft.setup.redName">
         </div>
 
+        <em>Use 0 seconds for unlimited vote time</em>
         <div class="setuprow">
           <label>Vote 1 - Ban #1 seconds</label>
-          <input type="number" min="3" max="100" value.bind="draft.setup.votingSecs[0]">
+          <input max="100" min="0" type="number" value.bind="draft.setup.votingSecs[0]">
         </div>
         <div class="setuprow">
           <label>Vote 2 - Pick #1 seconds</label>
-          <input type="number" min="3" max="100" value.bind="draft.setup.votingSecs[1]">
+          <input max="100" min="0" type="number" value.bind="draft.setup.votingSecs[1]">
         </div>
         <div class="setuprow">
           <label>Vote 3 - Pick #2 seconds</label>
-          <input type="number" min="3" max="100" value.bind="draft.setup.votingSecs[2]">
+          <input max="100" min="0" type="number" value.bind="draft.setup.votingSecs[2]">
         </div>
         <div class="setuprow">
           <label>Vote 4 - Ban #2 seconds</label>
-          <input type="number" min="3" max="100" value.bind="draft.setup.votingSecs[3]">
+          <input max="100" min="0" type="number" value.bind="draft.setup.votingSecs[3]">
         </div>
         <div class="setuprow">
           <label>Vote 5 - Pick #3 seconds</label>
-          <input type="number" min="3" max="100" value.bind="draft.setup.votingSecs[4]">
+          <input max="100" min="0" type="number" value.bind="draft.setup.votingSecs[4]">
         </div>
 
         <div class="setuprow">
           <label>Delay between next vote period</label>
-          <input type="number" min="1" max="10" value.bind="draft.setup.phaseDelaySecs">
+          <input max="10" min="0" type="number" value.bind="draft.setup.phaseDelaySecs">
         </div>
 
         <button type="submit">Create</button>

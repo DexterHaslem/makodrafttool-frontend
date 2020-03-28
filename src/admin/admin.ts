@@ -3,6 +3,9 @@ import {Api} from '../api';
 import {Draft, GameMap} from 'models';
 import * as R from 'ramda';
 
+const DEFAULT_VOTE_SECS = 60;
+const DEFAULT_BREAK_SECS = 3;
+
 @inject(Api)
 export class Admin {
   api: Api;
@@ -18,8 +21,8 @@ export class Admin {
         mapName: "Map",
         name: "My new Draft",
         redName: "Red",
-        votingSecs: [30, 30, 30, 30, 30],
-        phaseDelaySecs: 2,
+        votingSecs: [DEFAULT_VOTE_SECS, DEFAULT_VOTE_SECS, DEFAULT_VOTE_SECS, DEFAULT_VOTE_SECS, DEFAULT_VOTE_SECS],
+        phaseDelaySecs: DEFAULT_BREAK_SECS,
       },
       ids: {
         admin: "",

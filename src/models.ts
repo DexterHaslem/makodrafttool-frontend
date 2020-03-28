@@ -84,6 +84,7 @@ export class WsMsgSnapshot extends WsMsgBase {
   voteActive: boolean;
   votePaused: boolean;
   voteTimeLeft: number;
+  voteUnlimitedTime: boolean;
   voteTimeLeftPretty: string;
   currentVote: PhaseVote;
   currentPhase: number;
