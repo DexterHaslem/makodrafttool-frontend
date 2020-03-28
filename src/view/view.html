@@ -11,23 +11,19 @@
     <h3>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}</h3>
     <h3>Viewing as ${getDraftStateName()}</h3>
 
-    <div>Red team name: <strong>${draftState.setup.redName}</strong> Blue team name: <strong>${draftState.setup.blueName}</strong>
+    <div>
+      Red team name: <strong>${draftState.setup.redName}</strong>
+      Blue team name: <strong>${draftState.setup.blueName}</strong>
     </div>
     <div>Admin connected: ${snapshot.adminConnected ? 'TRUE' : 'FALSE'}</div>
     <div>red captain connected: ${snapshot.redConnected ? 'TRUE' : 'FALSE'}</div>
     <div>blue captain connected: ${snapshot.blueConnected ? 'TRUE' : 'FALSE'}</div>
     <div># viewers: ${snapshot.resultsViewers}</div>
 
-    <div if.bind="isAdmin() && !snapshot.draftStarted">
-      <div if.bind="!snapshot.draftDone">
-        <div>Red ready ${snapshot.redReady ? 'YES' : 'NO' }</div>
-        <div>Blue ready ${snapshot.blueReady ? 'YES' : 'NO' }</div>
-      </div>
-
-      <!-- removed ready req: if.bind="snapshot.redReady && snapshot.blueReady"  -->
-      <button click.trigger="startDraftVoting()">
-        Start Draft!
-      </button>
+    <div if.bind="!snapshot.draftDone && !snapshot.draftStarted">
+      <div>Red captain ready: <strong>${snapshot.redReady ? 'YES' : 'NO' }</strong></div>
+      <div>Blue captain ready: <strong>${snapshot.blueReady ? 'YES' : 'NO' }</strong></div>
+      <h4>Drafting will begin when both captains are ready</h4>
     </div>
 
     <div if.bind="isCaptain() && !snapshot.draftStarted">
@@ -41,20 +37,15 @@
 
     <div if.bind="snapshot.voteActive">
       <h4>VOTING ACTIVE!</h4>
-      <h3>${snapshot.currentVote.phaseType == 'ban' ? 'BANNING' : 'PICKING'}</h3>
+      <h2>${snapshot.currentVote.phaseType == 'ban' ? 'BANNING' : 'PICKING'} ... </h2>
       <strong>${snapshot.voteTimeLeftPretty} seconds left .. ${snapshot.votePaused ? '(PAUSED)' : ''}</strong>
       <div if.bind="isAdmin()">
-        <div>
-          <button click.trigger="togglePauseTimer()">${snapshot.votePaused ? 'Unpause' : 'Pause'} vote</button>
-          <button click.trigger="resetTimer()">Reset vote timer</button>
-        </div>
-        <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }
-          (<strong>${prettyVoteValue(snapshot.currentVote.voteRedValue)}</strong>)
-        </div>
-        <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO'
-          }(<strong>${prettyVoteValue(snapshot.currentVote.voteBlueValue)}</strong>)
-        </div>
+        <button click.trigger="togglePauseTimer()">${snapshot.votePaused ? 'Unpause' : 'Pause'} vote</button>
+        <button click.trigger="resetTimer()">Reset vote timer</button>
       </div>
+
+      <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }</div>
+      <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO' }</div>
 
       <div show.bind="isCaptain()">
         <select disabled.bind="!lockinEnabled && !snapshot.votePaused" value.bind="selectedVoteValue">

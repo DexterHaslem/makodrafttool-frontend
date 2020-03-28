@@ -18,9 +18,9 @@ const title = 'BR Draft';
 const outDir = path.resolve(__dirname, project.platform.output);
 const srcDir = path.resolve(__dirname, 'src');
 const nodeModulesDir = path.resolve(__dirname, 'node_modules');
-//const baseUrl = '/';
 // !!buildurl
-const baseUrl = '/static/';
+const baseUrl = '/'; // for webpack
+// const baseUrl = '/static/'; // for echo served
 
 const cssRules = [
   {loader: 'css-loader'},
