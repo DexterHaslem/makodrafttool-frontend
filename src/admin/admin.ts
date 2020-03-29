@@ -53,7 +53,7 @@ export class Admin {
     /* NOTE: relies on webpack.config.js baseUrl .. which isnt exported. blah */
     // !! buildurl
     const baseUrl = ''; // local webpack
-    // const baseUrl = 'static/'; // echo server hosted
+    // const baseUrl = 'static/'; // echo server hosted.. dont bother, webpack build will handle
     return `${baseUrl}#/v/${code}`;
   }
 }
