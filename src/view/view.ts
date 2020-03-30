@@ -176,6 +176,10 @@ export class View {
     return `#/v/${this.draftState.viewerCode}`;
   }
 
+  public getReportLink() {
+    return this.api.getURL(`draftReport/${this.draftState.viewerCode}`);
+  }
+
   getChampDisabled(c: Champion): boolean {
     if (!c || !this.snapshot || !this.draftState || !this.snapshot.currentVote) {
       return false;
