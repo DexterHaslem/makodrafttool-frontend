@@ -151,6 +151,10 @@
         </tbody>
       </table>
     </div>
+
+    <div if.bind="snapshot && snapshot.draftDone">
+      <a href.bind="getReportLink()" target="_blank">Report</a>
+    </div>
   </div>
   </div>
 </template>
