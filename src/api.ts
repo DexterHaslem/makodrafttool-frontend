@@ -2,30 +2,35 @@ import {HttpClient, json} from 'aurelia-fetch-client';
 import {inject} from 'aurelia-framework';
 
 // !!buildurl
-// TODO: make this more dynamic if a bother
-
-// change this (eg, with a build step) to deployed location of API
-// local go server
-const BASE_URL = 'http://localhost:8081/';
-const BASE_WS_URL = 'ws://localhost:8081/';
-
-//const BASE_URL = 'http://52.90.59.185:8081/';
-//const BASE_WS_URL = 'ws://52.90.59.185:8081/';
+const WEBPACK_PORT = '8080';
+const API_PORT = '8081';
 
 @inject(HttpClient)
 export class Api {
   http: HttpClient;
 
+  private getBaseUrl(isWebsocket: boolean): string {
+    let url = window.location.origin.replace(WEBPACK_PORT, API_PORT); //.replace("http://", "https://");
+
+    if (isWebsocket) {
+      url = url.replace(window.location.protocol, window.location.protocol === "https:" ?
+        "wss:": "ws:");
+    }
+
+    // note this is just to finish root url. base url is handled by webpack in `webpack.config.js`
+    return url + "/";
+  }
+
   constructor(http) {
     this.http = http;
     http.configure(cfg =>
-      cfg.withBaseUrl(BASE_URL)
+      cfg.withBaseUrl(this.getBaseUrl(false))
     );
   }
 
-  getURL(endpoint) {
-    return `${BASE_URL}${endpoint}`;
-  }
+  // getURL(endpoint) {
+  //   return `${BASE_URL}${endpoint}`;
+  // }
 
   createDraft(nd) {
     return this.http.fetch('newdraft',
@@ -56,7 +61,7 @@ export class Api {
   }
 
   getWs(sessionCode) {
-    let ws = new WebSocket(BASE_WS_URL + "ws/" + sessionCode);
+    let ws = new WebSocket(this.getBaseUrl(true) + "ws/" + sessionCode);
     return ws
   }
 }

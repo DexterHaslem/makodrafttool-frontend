@@ -177,7 +177,8 @@ export class View {
   }
 
   public getReportLink() {
-    return this.api.getURL(`draftReport/${this.draftState.viewerCode}`);
+    //return this.api.getURL(`draftReport/${this.draftState.viewerCode}`);
+    return `draftReport/${this.draftState.viewerCode}`;
   }
 
   getChampDisabled(c: Champion): boolean {
