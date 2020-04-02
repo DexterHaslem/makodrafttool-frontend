@@ -28,9 +28,9 @@ export class Api {
     );
   }
 
-  // getURL(endpoint) {
-  //   return `${BASE_URL}${endpoint}`;
-  // }
+  getApiURL(endpoint) {
+     return `${this.getBaseUrl(false)}${endpoint}`;
+   }
 
   createDraft(nd) {
     return this.http.fetch('newdraft',
