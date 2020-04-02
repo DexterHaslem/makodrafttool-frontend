@@ -75,14 +75,23 @@
 
       Draft <strong>${draft.setup.name}</strong> on map ${draft.setup.mapName} created! codes for links:
       <div id="links-div" with.bind="draft.ids">
-        <div><strong>ADMIN</strong>: <input class="form-control" type="text" value.bind="admin"><a
-          href.bind="getViewLink(admin)" target="_blank">(Open ADMIN Link in new tab)</a></div>
-        <div><strong>RED CAPT</strong>: <input class="form-control" type="text" value.bind="red"><a
-          href.bind="getViewLink(red)" target="_blank">(Open Red Captain Link in new tab)</a></div>
-        <div><strong>BLUE CAPT:</strong> <input class="form-control" type="text" value.bind="blue"><a
-          href.bind="getViewLink(blue)" target="_blank">(Open Blue Captain Link in new tab)</a></div>
-        <div><strong>RESULTS:</strong> <input class="form-control" type="text" value.bind="results"><a
-          href.bind="getViewLink(results)" target="_blank">(Open results Link in new tab)</a></div>
+        <div>
+          <strong>ADMIN</strong>: <input class="form-control" type="text" value.bind="admin">
+          <a href.bind="getViewLink(admin)" target="_blank">(Open ADMIN Link in new tab)</a>
+        </div>
+        <div>
+          <strong>BLUE CAPT:</strong> <input class="form-control" type="text" value.bind="blue">
+          <a href.bind="getViewLink(blue)" target="_blank">(Open Blue Captain Link in new tab)</a>
+        </div>
+        <div>
+          <strong>RED CAPT</strong>: <input class="form-control" type="text" value.bind="red">
+          <a href.bind="getViewLink(red)" target="_blank">(Open Red Captain Link in new tab)</a>
+        </div>
+
+        <div>
+          <strong>RESULTS:</strong> <input class="form-control" type="text" value.bind="results">
+          <a href.bind="getViewLink(results)" target="_blank">(Open results Link in new tab)</a>
+        </div>
       </div>
     </form>
 

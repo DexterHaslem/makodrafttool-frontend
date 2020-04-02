@@ -1,4 +1,32 @@
 <template>
+  <style>
+    /* these are used in the results table colors */
+    .red {
+      color: #ba0000;
+    }
+
+    .blue {
+      color: #0000c9;
+    }
+
+    .ban {
+      background-color: rgba(225, 0, 0, 0.1);
+    }
+
+    .pick {
+      background-color: rgba(0, 200, 0, 0.1);
+    }
+
+    .status-text {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+
+    .captain-status {
+    }
+  </style>
+
   <div if.bind="connecting">
     connecting to draft id ${draftCode}...
   </div>
@@ -8,25 +36,24 @@
   </div>
 
   <div if.bind="!connectionFailed && !connecting && draftState">
-    <h3>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}</h3>
-    <h3>Viewing as ${getDraftStateName()}</h3>
-
+    <h4>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}</h4>
+    <h5>Viewing as ${getDraftStateName()}</h5>
     <a href.bind="getViewingLink()" if.bind="draftState">Readonly viewing link</a>
 
-    <div>
-      Red team name: <strong>${draftState.setup.redName}</strong>
-      Blue team name: <strong>${draftState.setup.blueName}</strong>
+    <div class="status-text">
+      <div>Blue team name: <strong class="blue">${draftState.setup.blueName}</strong></div>
+      <div>Red team name: <strong class="red">${draftState.setup.redName}</strong></div>
+      <div>Admin connected: ${snapshot.adminConnected ? 'TRUE' : 'FALSE'}</div>
+      <div>Red connected: ${snapshot.redConnected ? 'TRUE' : 'FALSE'}</div>
+      <div>Blue connected: ${snapshot.blueConnected ? 'TRUE' : 'FALSE'}</div>
     </div>
 
-    <div>Admin connected: ${snapshot.adminConnected ? 'TRUE' : 'FALSE'}</div>
-    <div>red captain connected: ${snapshot.redConnected ? 'TRUE' : 'FALSE'}</div>
-    <div>blue captain connected: ${snapshot.blueConnected ? 'TRUE' : 'FALSE'}</div>
-    <div># viewers: ${snapshot.resultsViewers}</div>
-
     <div if.bind="!snapshot.draftDone && !snapshot.draftStarted">
-      <div>Red captain ready: <strong>${snapshot.redReady ? 'YES' : 'NO' }</strong></div>
-      <div>Blue captain ready: <strong>${snapshot.blueReady ? 'YES' : 'NO' }</strong></div>
-      <h4>Drafting will begin when both captains are ready</h4>
+      <div class="status-text">
+        <div>Red captain ready: <strong>${snapshot.redReady ? 'YES' : 'NO' }</strong></div>
+        <div>Blue captain ready: <strong>${snapshot.blueReady ? 'YES' : 'NO' }</strong></div>
+      </div>
+      <h5>Drafting will begin when both captains are ready</h5>
     </div>
 
     <div if.bind="isCaptain() && !snapshot.draftStarted">
@@ -38,11 +65,10 @@
     </div>
 
     <div if.bind="snapshot.voteActive">
-      <h4>VOTING ACTIVE!</h4>
-      <h2>${snapshot.currentVote.phaseType == 'ban' ? 'BANNING' : 'PICKING'} ... </h2>
-
+      <h6>VOTING ACTIVE!</h6>
       <div if.bind="!snapshot.voteUnlimitedTime">
-        <strong>${snapshot.voteTimeLeftPretty} seconds left .. ${snapshot.votePaused ? '(PAUSED)' : ''}</strong>
+        <strong><span class.bind="snapshot.currentVote.phaseType">${snapshot.currentVote.phaseType == 'ban' ? 'BANNING' : 'PICKING'}</span>:
+          ${snapshot.voteTimeLeftPretty} seconds left .. ${snapshot.votePaused ? '(PAUSED)' : ''}</strong>
       </div>
 
       <div if.bind="isAdmin()">
@@ -50,14 +76,12 @@
           vote
         </button>
         <button class="btn btn-danger" click.trigger="resetTimer()">Reset vote timer</button>
+
+        <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }</div>
+        <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO' }</div>
       </div>
 
-      <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }</div>
-      <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO' }</div>
-
-
       <form show.bind="isCaptain()">
-        ${snapshot.currentVote.phaseType == 'ban' ? 'Banning' : 'Picking'} ...
 
         <div class="form-row">
           <select class="form-control form-group col-md-5 m-3" disabled.bind="!lockinEnabled && !snapshot.votePaused"
@@ -93,13 +117,13 @@
 
     <div>
       <h4>Draft selection ${snapshot.draftDone ? '(FINISHED)' : ''}</h4>
-      <table class="table">
+      <table class="table table-sm">
         <thead class="thead-light">
         <tr>
           <th scope="col">#</th>
           <th scope="col">Ban/pick</th>
-          <th scope="col">Red (${draftState.setup.redName})</th>
           <th scope="col">Blue (${draftState.setup.blueName})</th>
+          <th scope="col">Red (${draftState.setup.redName})</th>
           <th scope="col">Admin Adjusted?</th>
           <th if.bind="isAdmin()">Override</th>
         </tr>
@@ -107,13 +131,13 @@
 
         <tbody>
 
-        <tr repeat.for="p of snapshot.phases">
+        <tr repeat.for="p of snapshot.phases" class.bind="p.phaseType">
           <th scope="row">${p.phaseNum + 1}</th>
-          <td>${p.phaseType}</td>
+          <th scope="row">${p.phaseType}</th>
 
-          <td if.bind="!isAdmin()">${prettyVoteValue(p.voteRedValue) || 'None'}</td>
+          <td if.bind="!isAdmin()"><strong>${prettyVoteValue(p.voteBlueValue) || 'None'}</strong></td>
           <td if.bind="isAdmin()">
-            <select value.bind="p.voteRedValue">
+            <select value.bind="p.voteBlueValue">
               <option model.bind="none">(none)</option>
               <optgroup label="melee">
                 <option model.bind="mc.name" repeat.for="mc of champions.melee">${mc.displayName}</option>
@@ -126,9 +150,10 @@
               </optgroup>
             </select>
           </td>
-          <td if.bind="!isAdmin()">${prettyVoteValue(p.voteBlueValue) || 'None'}</td>
+
+          <td if.bind="!isAdmin()"><strong>${prettyVoteValue(p.voteRedValue) || 'None'}</strong></td>
           <td if.bind="isAdmin()">
-            <select value.bind="p.voteBlueValue">
+            <select value.bind="p.voteRedValue">
               <option model.bind="none">(none)</option>
               <optgroup label="melee">
                 <option model.bind="mc.name" repeat.for="mc of champions.melee">${mc.displayName}</option>
@@ -145,7 +170,7 @@
           <td><input checked.bind="p.adminOverride" class="form-check-input" disabled="disabled" type="checkbox"></td>
 
           <td if.bind="isAdmin()">
-            <button class="btn btn-danger" click.trigger="overrideVote(p)">Override vote</button>
+            <button class="btn btn-danger btn-sm" click.trigger="overrideVote(p)">Override vote</button>
           </td>
         </tr>
         </tbody>
