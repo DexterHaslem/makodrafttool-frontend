@@ -14,7 +14,7 @@ import {
   WsMsgTimerOnly
 } from "../models";
 import {prettyChampName} from "../util";
-
+import {PrettyResults} from "../pretty-results/pretty-results";
 
 @inject(Api)
 export class View {
@@ -42,11 +42,15 @@ export class View {
   ui is not broken out to components either so the dom is a bit messy
    */
 
-  constructor(api) {
+  resultsViewer : PrettyResults;
+
+
+  constructor(api : Api) {
     this.api = api;
     this.connecting = true;
     this.selectedVoteValue = 'none';
 
+    this.resultsViewer = new PrettyResults();
     // enable by default incase they refresh
     this.lockinEnabled = true;
   }
@@ -59,7 +63,13 @@ export class View {
       this.validChampions = R.clone(c);
     }).then(() => {
       // get draft state after champions so that we can always resolve champ names
-      this.api.getDraftState(this.draftCode).then(st => this.draftState = st);
+      this.api.getDraftState(this.draftCode).then(st => {
+        this.draftState = st;
+        this.resultsViewer.champions = this.champions;
+        this.resultsViewer.draftState = this.draftState;
+        this.resultsViewer.votes = this.getVotes();
+        this.resultsViewer.update();
+      });
     });
 
     this.ws = this.api.getWs(this.draftCode);
@@ -143,7 +153,7 @@ export class View {
         case SessionType.Red:
           return "Red captain";
         case SessionType.Results:
-          return "Results viewer";
+          return "Results";
       }
     }
 
@@ -175,7 +185,7 @@ export class View {
   }
 
   public getViewingLink() {
-    return `#/r/${this.draftState.viewerCode}`;
+    return `#/v/${this.draftState.viewerCode}`;
   }
 
   public getReportLink() {
@@ -222,6 +232,13 @@ export class View {
     return prettyChampName(this.champions, champName);
   }
 
+  private getVotes() : PhaseVote[] {
+    if (!this.draftState) {
+      return [];
+    }
+    return this.snapshot && this.snapshot.phases ? this.snapshot.phases : this.draftState.phases;
+  }
+
   private onWsMessage(msgEvent: MessageEvent) {
     let mb: WsMsgBase = JSON.parse(msgEvent.data);
     if (mb.msgType == WebsocketMessageType.snapshot) {
@@ -250,6 +267,9 @@ export class View {
         this.votesCopy = R.clone(ss.phases);
         this.selectedVoteValue = 'none';
       }
+
+      this.resultsViewer.votes = this.getVotes();
+      this.resultsViewer.update();
     }
 
     if (mb.msgType == WebsocketMessageType.snapshotTimerOnly) {

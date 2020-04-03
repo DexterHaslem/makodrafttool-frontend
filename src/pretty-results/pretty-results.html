@@ -1,5 +1,5 @@
 <template>
-  <div if.bind="draftState && votes" class="pick-ban-overlay"  css="background-image: url('maps/${draftState.setup.mapName}.png'">
+  <div if.bind="draftState" class="pick-ban-overlay" css="background-image: url('maps/${draftState.setup.mapName}.png'">
 
     <div class="picks">
       <div class="pick-column blue-pick">
@@ -22,11 +22,11 @@
           <div class="ban-image" css="background-image: url('${blueBan2.asset}')"><h2 innerhtml.bind="blueBan2.displayName"></h2></div>
         </div>
         <div class="blue-bg">
-          <h2 id="blue-team-name" innerhtml.bind="draftState.setup.blueName | sanitizeHTML"></h2>
+          <h2 innerhtml.bind="draftState.setup.blueName | sanitizeHTML"></h2>
         </div>
       </div>
 
-      <h1 id="map-name-overlay" class="map-name-overlay" innerhtml.bind="draftState.setup.mapName"></h1>
+      <h1 class="map-name-overlay" innerhtml.bind="draftState.setup.mapName"></h1>
 
       <div class="red-bans-overlay">
         <div style="display: flex; flex-direction: row;">
@@ -34,7 +34,7 @@
           <div class="ban-image" css="background-image: url('${redBan2.asset}')"><h2 innerhtml.bind="redBan2.displayName"></h2></div>
         </div>
         <div class="red-bg">
-          <h2 id="red-team-name" innerhtml.bind="draftState.setup.redName | sanitizeHTML"></h2>
+          <h2 innerhtml.bind="draftState.setup.redName | sanitizeHTML"></h2>
         </div>
       </div>
     </div>

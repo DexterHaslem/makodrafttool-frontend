@@ -56,6 +56,6 @@ export class Admin {
 
   getViewLink(code) {
     // !! buildurl
-    return `#/r/${code}`;
+    return `#/v/${code}`;
   }
 }

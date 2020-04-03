@@ -7,7 +7,7 @@ body {
 
 .pick-ban-overlay {
   height: 100%;
-  width: 100%;
+  width: 99%;
   background-color: black;
   background-size: cover;
   background-position: center;

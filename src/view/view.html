@@ -1,4 +1,5 @@
 <template>
+  <require from="../pretty-results/pretty-results"></require>
   <style>
     /* these are used in the results table colors */
     .red {
@@ -25,6 +26,12 @@
 
     .captain-status {
     }
+
+    .vote-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+    }
   </style>
 
   <div if.bind="connecting">
@@ -35,12 +42,12 @@
     Connection failed, check code or draft is still running
   </div>
 
-  <div if.bind="!connectionFailed && !connecting && draftState">
-    <h4>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}</h4>
-    <h5>Viewing as ${getDraftStateName()}</h5>
-    <a href.bind="getViewingLink()" if.bind="draftState">Readonly viewing link</a>
+  <div class="m-1" if.bind="!connectionFailed && !connecting && draftState">
+    <h6>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}, Viewing as
+      <strong>${getDraftStateName()}</strong>
+      <a class="small" href.bind="getViewingLink()" if.bind="draftState">Readonly viewing link</a></h6>
 
-    <div class="status-text">
+    <div if.bind="false" class="status-text">
       <div>Blue team name: <strong class="blue">${draftState.setup.blueName}</strong></div>
       <div>Red team name: <strong class="red">${draftState.setup.redName}</strong></div>
       <div>Admin connected: ${snapshot.adminConnected ? 'TRUE' : 'FALSE'}</div>
@@ -53,7 +60,7 @@
         <div>Red captain ready: <strong>${snapshot.redReady ? 'YES' : 'NO' }</strong></div>
         <div>Blue captain ready: <strong>${snapshot.blueReady ? 'YES' : 'NO' }</strong></div>
       </div>
-      <h5>Drafting will begin when both captains are ready</h5>
+      <h6>Drafting will begin when both captains are ready</h6>
     </div>
 
     <div if.bind="isCaptain() && !snapshot.draftStarted">
@@ -61,62 +68,59 @@
     </div>
 
     <div if.bind="snapshot.draftStarted && !snapshot.voteActive && !snapshot.draftDone">
-      <h4>Pending next ban/pick... get ready</h4>
+      <h6>Pending next ban/pick... get ready</h6>
     </div>
 
     <div if.bind="snapshot.voteActive">
-      <h6>VOTING ACTIVE!</h6>
-      <div if.bind="!snapshot.voteUnlimitedTime">
-        <strong><span class.bind="snapshot.currentVote.phaseType">${snapshot.currentVote.phaseType == 'ban' ? 'BANNING' : 'PICKING'}</span>:
-          ${snapshot.voteTimeLeftPretty} seconds left .. ${snapshot.votePaused ? '(PAUSED)' : ''}</strong>
-      </div>
+      <div class="vote-row m-2">
 
-      <div if.bind="isAdmin()">
-        <button class="btn btn-warning" click.trigger="togglePauseTimer()">${snapshot.votePaused ? 'Unpause' : 'Pause'}
-          vote
-        </button>
-        <button class="btn btn-danger" click.trigger="resetTimer()">Reset vote timer</button>
+        <strong if.bind="!snapshot.voteUnlimitedTime">${snapshot.voteTimeLeftPretty} seconds left ..
+          ${snapshot.votePaused ? '(PAUSED)' : ''}</strong>
+        <span class.bind="snapshot.currentVote.phaseType">${snapshot.currentVote.phaseType == 'ban' ? 'BANNING' : 'PICKING'}</span>:
 
-        <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }</div>
-        <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO' }</div>
-      </div>
-
-      <form show.bind="isCaptain()">
-
-        <div class="form-row">
-          <select class="form-control form-group col-md-5 m-3" disabled.bind="!lockinEnabled && !snapshot.votePaused"
-                  value.bind="selectedVoteValue">
-            <option model.bind="none">Choose ..</option>
-            <optgroup label="melee">
-              <option disabled.bind="getChampDisabled(mc)" model.bind="mc.name" repeat.for="mc of validChampions.melee">
-                ${mc.displayName}
-              </option>
-            </optgroup>
-            <optgroup label="ranged">
-              <option disabled.bind="getChampDisabled(mc)" model.bind="rc.name"
-                      repeat.for="rc of validChampions.ranged">
-                ${rc.displayName}
-              </option>
-            </optgroup>
-            <optgroup label="support">
-              <option disabled.bind="getChampDisabled(mc)" model.bind="sc.name"
-                      repeat.for="sc of validChampions.support">
-                ${sc.displayName}
-              </option>
-            </optgroup>
-          </select>
-          <button class="btn-lg btn-primary col-md-4 form-group m-3" click.trigger="lockinVote()"
-                  disabled.bind="selectedVoteValue == 'none' || !lockinEnabled">
-            Lock in
+        <div if.bind="isAdmin()">
+          <button class="btn btn-warning" click.trigger="togglePauseTimer()">${snapshot.votePaused ? 'Unpause' :
+            'Pause'}
+            vote
           </button>
+          <button class="btn btn-danger" click.trigger="resetTimer()">Reset vote timer</button>
+
+          <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }</div>
+          <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO' }</div>
         </div>
-      </form>
+
+        <select class="form-control-sm" disabled.bind="!lockinEnabled && !snapshot.votePaused" value.bind="selectedVoteValue">
+          <option model.bind="none">Choose ..</option>
+          <optgroup label="melee">
+            <option disabled.bind="getChampDisabled(mc)" model.bind="mc.name" repeat.for="mc of validChampions.melee">
+              ${mc.displayName}
+            </option>
+          </optgroup>
+          <optgroup label="ranged">
+            <option disabled.bind="getChampDisabled(mc)" model.bind="rc.name"
+                    repeat.for="rc of validChampions.ranged">
+              ${rc.displayName}
+            </option>
+          </optgroup>
+          <optgroup label="support">
+            <option disabled.bind="getChampDisabled(mc)" model.bind="sc.name"
+                    repeat.for="sc of validChampions.support">
+              ${sc.displayName}
+            </option>
+          </optgroup>
+        </select>
+        <button click.trigger="lockinVote()"
+                disabled.bind="!lockinEnabled" class.bind="lockinEnabled ? 'btn-sm btn-primary' : 'btn-sm btn-secondary'">
+          Lock in
+        </button>
+      </div>
     </div>
 
-    <hr>
+    <compose view="pretty-results/pretty-results.html" view-model.bind="resultsViewer">
+    </compose>
 
-    <div>
-      <h4>Draft selection ${snapshot.draftDone ? '(FINISHED)' : ''}</h4>
+    <div class="p-2">
+      <h4>Draft table ${snapshot.draftDone ? '(FINISHED)' : ''}</h4>
       <table class="table table-sm">
         <thead class="thead-light">
         <tr>
