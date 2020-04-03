@@ -57,10 +57,15 @@
   </div>
 
   <div class="m-1" if.bind="!connectionFailed && !connecting && draftState">
-    <h6>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}, Viewing as
+    <h6 if.bind="!isResults()">Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}, Viewing as
       <strong>${getDraftStateName()}</strong>
-      <a class="small" href.bind="getViewingLink()" if.bind="draftState" target="_blank">(Readonly viewing link)</a></h6>
+      <a class="small" href.bind="getViewingLink()" if.bind="draftState" target="_blank">(Draft view link)</a>
+      <div if.bind="snapshot && snapshot.draftDone">
+        <a href.bind="getReportLink()" target="_blank">Download Draft Report</a>
+      </div>
+    </h6>
 
+    <!--
     <div if.bind="false" class="status-text">
       <div>Blue team name: <strong class="blue">${draftState.setup.blueName}</strong></div>
       <div>Red team name: <strong class="red">${draftState.setup.redName}</strong></div>
@@ -68,8 +73,9 @@
       <div>Red connected: ${snapshot.redConnected ? 'TRUE' : 'FALSE'}</div>
       <div>Blue connected: ${snapshot.blueConnected ? 'TRUE' : 'FALSE'}</div>
     </div>
+    -->
 
-    <div if.bind="!snapshot.draftDone && !snapshot.draftStarted">
+    <div if.bind="!isResults() && !snapshot.draftDone && !snapshot.draftStarted">
       <div class="ready-status-text m-1">
       <h6 class="m-1">Drafting will begin when both captains are ready: </h6>
         <button if.bind="isCaptain()" class="btn-sm btn-primary" click.trigger="sendReady()">READY</button>
@@ -79,11 +85,11 @@
 
     </div>
 
-    <div if.bind="snapshot.draftStarted && !snapshot.voteActive && !snapshot.draftDone">
+    <div if.bind="!isResults() && snapshot.draftStarted && !snapshot.voteActive && !snapshot.draftDone">
       <h6>Pending next ban/pick... get ready</h6>
     </div>
 
-    <div if.bind="snapshot.voteActive">
+    <div if.bind="snapshot.voteActive && !isResults()">
       <div class="vote-row m-2">
 
         <strong if.bind="!snapshot.voteUnlimitedTime">${snapshot.voteTimeLeftPretty} seconds left ..
@@ -131,7 +137,7 @@
     <compose view="pretty-results/pretty-results.html" view-model.bind="resultsViewer">
     </compose>
 
-    <div class="p-2">
+    <div if.bind="!isResults()" class="p-2">
       <h4>Draft table ${snapshot.draftDone ? '(FINISHED)' : ''}</h4>
       <table class="table table-sm">
         <thead class="thead-light">
@@ -191,10 +197,6 @@
         </tr>
         </tbody>
       </table>
-    </div>
-
-    <div if.bind="snapshot && snapshot.draftDone">
-      <a href.bind="getReportLink()" target="_blank">Generate Draft Report</a>
     </div>
   </div>
   </div>

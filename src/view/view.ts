@@ -63,20 +63,38 @@ export class View {
       this.validChampions = R.clone(c);
     }).then(() => {
       // get draft state after champions so that we can always resolve champ names
-      this.api.getDraftState(this.draftCode).then(st => {
+      return this.api.getDraftState(this.draftCode).then(st => {
         this.draftState = st;
         this.resultsViewer.champions = this.champions;
         this.resultsViewer.draftState = this.draftState;
         this.resultsViewer.votes = this.getVotes();
         this.resultsViewer.update();
+
       });
     });
+
+    //this is tricky: cant set dynamic route without draft state code,
+    // but you have to set dynamic title before activate() finishes
+    /*
+    let newTitle = 'MDT';
+    debugger;
+    switch (sesTypeP.) {
+      case SessionType.Admin: newTitle = 'Draft ADMIN'; break;
+      case SessionType.Results: newTitle = 'View Draft'; break;
+      case SessionType.Blue: newTitle = 'Blue Captain'; break;
+      case SessionType.Red: newTitle = 'Red Captain'; break;
+    }
+    route.navModel.title = newTitle;*/
 
     this.ws = this.api.getWs(this.draftCode);
     this.ws.onopen = this.onWsOpen.bind(this);
     this.ws.onclose = this.onWsClose.bind(this);
     this.ws.onerror = this.onWsError.bind(this);
     this.ws.onmessage = this.onWsMessage.bind(this);
+  }
+
+  private isResults() : boolean {
+    return this.draftState && this.draftState.sessionType == SessionType.Results;
   }
 
   private isAdmin(): boolean {
