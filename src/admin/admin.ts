@@ -49,11 +49,13 @@ export class Admin {
     this.draftCreated = false;
   }
 
-  getViewLink(code) {
-    /* NOTE: relies on webpack.config.js baseUrl .. which isnt exported. blah */
+  getParticipantLink(code) {
     // !! buildurl
-    const baseUrl = ''; // local webpack
-    // const baseUrl = 'static/'; // echo server hosted
-    return `${baseUrl}#/v/${code}`;
+    return `#/v/${code}`;
+  }
+
+  getViewLink(code) {
+    // !! buildurl
+    return `#/r/${code}`;
   }
 }

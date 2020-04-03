@@ -175,8 +175,7 @@ export class View {
   }
 
   public getViewingLink() {
-    // !! baseUrl
-    return `#/v/${this.draftState.viewerCode}`;
+    return `#/r/${this.draftState.viewerCode}`;
   }
 
   public getReportLink() {

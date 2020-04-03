@@ -23,9 +23,30 @@ export class Prettyresults {
   private ws: WebSocket;
   private votes: PhaseVote[];
 
+  // note: all binds used to be interpolated function calls, but binding wouldnt update. using css is unreliable
+  // just hacking this out for now with a bunch of observables. by binding child innerhtml we get updates.
+  // insult to injury, if this was an array, updating subindices doesnt refresh bindings either. yeehaw
+  redBan1: Champion;
+  blueBan1: Champion;
+  redBan2: Champion;
+  blueBan2: Champion;
+  redPick1: Champion;
+  redPick2: Champion;
+  redPick3: Champion;
+  bluePick1: Champion;
+  bluePick2: Champion;
+  bluePick3: Champion;
+  placeHolderChamp: Champion;
+
   constructor(api: Api) {
     this.api = api;
     this.draftState = null;
+
+    this.placeHolderChamp = {
+      displayName: '',
+      name: '',
+      asset:'champions/placeholder.jpg',
+    }
   }
 
   activate(params, route) {
@@ -78,12 +99,12 @@ export class Prettyresults {
   private getChampForVote(isBlue : boolean, isBan: boolean, voteNum : number) : Champion | null {
     const v = this.getVoteForIdx(voteNum, isBan);
     if (v === null) {
-      return null;
+      return this.placeHolderChamp;
     }
 
     const tryChamp = findChampByShortName(this.champions, isBlue ? v.voteBlueValue : v.voteRedValue);
-    // note: rambda undefine bubbles up, make sure to coescl to null
-    return tryChamp || null;
+    // note: rambda undefine bubbles up, make sure to colesc to null
+    return tryChamp || this.placeHolderChamp;
   }
 
   private getImage(isBlue : boolean, isBan: boolean, voteNum : number) {
@@ -156,6 +177,17 @@ export class Prettyresults {
   private update(fromWs : boolean) {
     console.log(`update: fromWs=${fromWs} votes=`, this.votes);
 
+    this.redBan1 = this.getChampForVote(false, true, 1);
+    this.blueBan1 = this.getChampForVote(true, true, 1);
+    this.redBan2 = this.getChampForVote(false, true, 2);
+    this.blueBan2 = this.getChampForVote(true, true, 2);
 
+    this.redPick1 = this.getChampForVote(false, false, 1);
+    this.redPick2 = this.getChampForVote(false, false, 2);
+    this.redPick3 = this.getChampForVote(false, false, 3);
+
+    this.bluePick1 = this.getChampForVote(true, false, 1);
+    this.bluePick2 = this.getChampForVote(true, false, 2);
+    this.bluePick3 = this.getChampForVote(true, false, 3);
   }
 }

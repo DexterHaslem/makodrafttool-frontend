@@ -1,40 +1,40 @@
 <template>
-  <div if.bind="draftState" class="pick-ban-overlay"  css="background-image: url('maps/${draftState.setup.mapName}.png'">
+  <div if.bind="draftState && votes" class="pick-ban-overlay"  css="background-image: url('maps/${draftState.setup.mapName}.png'">
 
     <div class="picks">
       <div class="pick-column blue-pick">
-        <div class="image" css="background-image: url('${getBluePickImage(1)}')"><h2>${getBluePickName(1)}</h2></div>
-        <div class="image" css="background-image: url('${getBluePickImage(2)}')"><h2>${getBluePickName(2)}</h2></div>
-        <div class="image" css="background-image: url('${getBluePickImage(3)}')"><h2>${getBluePickName(3)}</h2></div>
+        <div class="image" css="background-image: url('${bluePick1.asset}')"><h2 innerhtml.bind="bluePick1.displayName"></h2></div>
+        <div class="image" css="background-image: url('${bluePick2.asset}')"><h2 innerhtml.bind="bluePick2.displayName"></h2></div>
+        <div class="image" css="background-image: url('${bluePick3.asset}')"><h2 innerhtml.bind="bluePick3.displayName"></h2></div>
       </div>
-      <div class="match-title">${draftState.setup.name}</div>
+      <div class="match-title"><h1 innerhtml.bind="draftState.setup.name | sanitizeHTML"></h1></div>
       <div class="pick-column red-pick">
-        <div class="image" css="background-image: url('${getRedPickImage(1)}')"><h2>${getRedPickName(1)}</h2></div>
-        <div class="image" css="background-image: url('${getRedPickImage(2)}')"><h2>${getRedPickName(2)}</h2></div>
-        <div class="image" css="background-image: url('${getRedPickImage(3)}')"><h2>${getRedPickName(3)}</h2></div>
+        <div class="image" css="background-image: url('${redPick1.asset}')"><h2 innerhtml.bind="redPick1.displayName"></h2></div>
+        <div class="image" css="background-image: url('${redPick2.asset}')"><h2 innerhtml.bind="redPick2.displayName"></h2></div>
+        <div class="image" css="background-image: url('${redPick3.asset}')"><h2 innerhtml.bind="redPick3.displayName"></h2></div>
       </div>
     </div>
 
     <div class="ban-header">
       <div class="blue-bans-overlay">
         <div style="display: flex; flex-direction: row;">
-          <div class="ban-image" css="background-image: url('${getBlueBanImage(1)}')"><h2>${getBlueBanName(1)}</h2></div>
-          <div class="ban-image" css="background-image: url('${getBlueBanImage(2)}')"><h2>${getBlueBanName(2)}</h2></div>
+          <div class="ban-image" css="background-image: url('${blueBan1.asset}')"><h2 innerhtml.bind="blueBan1.displayName"></h2></div>
+          <div class="ban-image" css="background-image: url('${blueBan2.asset}')"><h2 innerhtml.bind="blueBan2.displayName"></h2></div>
         </div>
         <div class="blue-bg">
-          <h2 id="blue-team-name">${draftState.setup.blueName}</h2>
+          <h2 id="blue-team-name" innerhtml.bind="draftState.setup.blueName | sanitizeHTML"></h2>
         </div>
       </div>
 
-      <h1 id="map-name-overlay" class="map-name-overlay">${draftState.setup.mapName}</h1>
+      <h1 id="map-name-overlay" class="map-name-overlay" innerhtml.bind="draftState.setup.mapName"></h1>
 
       <div class="red-bans-overlay">
         <div style="display: flex; flex-direction: row;">
-          <div class="ban-image" css="background-image: url('${getRedBanImage(1)}')"><h2>${getRedBanName(1)}</h2></div>
-          <div class="ban-image" css="background-image: url('${getRedBanImage(2)}')"><h2>${getRedBanName(2)}</h2></div>
+          <div class="ban-image" css="background-image: url('${redBan1.asset}')"><h2 innerhtml.bind="redBan1.displayName"></h2></div>
+          <div class="ban-image" css="background-image: url('${redBan2.asset}')"><h2 innerhtml.bind="redBan2.displayName"></h2></div>
         </div>
         <div class="red-bg">
-          <h2 id="red-team-name">${draftState.setup.redName}</h2>
+          <h2 id="red-team-name" innerhtml.bind="draftState.setup.redName | sanitizeHTML"></h2>
         </div>
       </div>
     </div>
