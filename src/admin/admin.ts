@@ -3,7 +3,7 @@ import {Api} from '../api';
 import {Draft, GameMap} from 'models';
 import * as R from 'ramda';
 
-const DEFAULT_VOTE_SECS = 60;
+const DEFAULT_VOTE_SECS = 0; // unlimited per mako
 const DEFAULT_BREAK_SECS = 3;
 
 @inject(Api)

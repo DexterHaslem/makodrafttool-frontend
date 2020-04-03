@@ -59,7 +59,7 @@
   <div class="m-1" if.bind="!connectionFailed && !connecting && draftState">
     <h6>Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}, Viewing as
       <strong>${getDraftStateName()}</strong>
-      <a class="small" href.bind="getViewingLink()" if.bind="draftState">Readonly viewing link</a></h6>
+      <a class="small" href.bind="getViewingLink()" if.bind="draftState" target="_blank">(Readonly viewing link)</a></h6>
 
     <div if.bind="false" class="status-text">
       <div>Blue team name: <strong class="blue">${draftState.setup.blueName}</strong></div>
