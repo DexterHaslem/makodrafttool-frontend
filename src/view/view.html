@@ -24,9 +24,23 @@
       justify-content: space-around;
     }
 
+    .ready-status-text {
+      display:flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      justify-items: flex-start;
+    }
     .captain-status {
     }
 
+    .champ-selector {
+      width: 175px;
+      height:25px;
+    }
+    .champ-lockin-button {
+      height: 30px;
+      width: 150px;
+    }
     .vote-row {
       display: flex;
       flex-direction: row;
@@ -56,15 +70,13 @@
     </div>
 
     <div if.bind="!snapshot.draftDone && !snapshot.draftStarted">
-      <div class="status-text">
-        <div>Red captain ready: <strong>${snapshot.redReady ? 'YES' : 'NO' }</strong></div>
-        <div>Blue captain ready: <strong>${snapshot.blueReady ? 'YES' : 'NO' }</strong></div>
+      <div class="ready-status-text m-1">
+      <h6 class="m-1">Drafting will begin when both captains are ready: </h6>
+        <button if.bind="isCaptain()" class="btn-sm btn-primary" click.trigger="sendReady()">READY</button>
+        <div class="m-1">Red captain ready: <strong>${snapshot.redReady ? 'YES' : 'NO' }</strong></div>
+        <div class="m-1">Blue captain ready: <strong>${snapshot.blueReady ? 'YES' : 'NO' }</strong></div>
       </div>
-      <h6>Drafting will begin when both captains are ready</h6>
-    </div>
 
-    <div if.bind="isCaptain() && !snapshot.draftStarted">
-      <button class="btn btn-primary" click.trigger="sendReady()">Ready</button>
     </div>
 
     <div if.bind="snapshot.draftStarted && !snapshot.voteActive && !snapshot.draftDone">
@@ -78,19 +90,18 @@
           ${snapshot.votePaused ? '(PAUSED)' : ''}</strong>
         <span class.bind="snapshot.currentVote.phaseType">${snapshot.currentVote.phaseType == 'ban' ? 'BANNING' : 'PICKING'}</span>:
 
-        <div if.bind="isAdmin()">
-          <button class="btn btn-warning" click.trigger="togglePauseTimer()">${snapshot.votePaused ? 'Unpause' :
+        <div class="status-text mr-1" if.bind="isAdmin()">
+          <button class="btn btn-warning mr-1" click.trigger="togglePauseTimer()">${snapshot.votePaused ? 'Unpause' :
             'Pause'}
             vote
           </button>
-          <button class="btn btn-danger" click.trigger="resetTimer()">Reset vote timer</button>
-
-          <div>Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }</div>
+          <button class="btn btn-danger mr-1" click.trigger="resetTimer()">Reset vote timer</button>
+          <div class="mr-1">Red vote locked in ${snapshot.currentVote.redHasVoted ? 'YES' : 'NO' }</div>
           <div>Blue vote locked in ${snapshot.currentVote.blueHasVoted ? 'YES' : 'NO' }</div>
         </div>
 
-        <select class="form-control-sm" disabled.bind="!lockinEnabled && !snapshot.votePaused" value.bind="selectedVoteValue">
-          <option model.bind="none">Choose ..</option>
+        <select if.bind="isCaptain()" class="champ-selector m-1" disabled.bind="!lockinEnabled && !snapshot.votePaused" value.bind="selectedVoteValue">
+          <option model.bind="'none'">Choose ..</option>
           <optgroup label="melee">
             <option disabled.bind="getChampDisabled(mc)" model.bind="mc.name" repeat.for="mc of validChampions.melee">
               ${mc.displayName}
@@ -109,8 +120,9 @@
             </option>
           </optgroup>
         </select>
-        <button click.trigger="lockinVote()"
-                disabled.bind="!lockinEnabled" class.bind="lockinEnabled ? 'btn-sm btn-primary' : 'btn-sm btn-secondary'">
+        <button if.bind="isCaptain()" click.trigger="lockinVote()"
+                disabled.bind="!lockinEnabled || selectedVoteValue == 'none'"
+                class.bind="!lockinEnabled || selectedVoteValue == 'none' ? 'champ-lockin-button btn-secondary' : 'champ-lockin-button btn-primary'">
           Lock in
         </button>
       </div>
