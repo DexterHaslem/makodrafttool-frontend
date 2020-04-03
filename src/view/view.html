@@ -21,15 +21,20 @@
     .status-text {
       display: flex;
       flex-direction: row;
-      justify-content: space-around;
+      justify-content: flex-start;
+    }
+
+    .small-status {
+      font-size: small;
+      margin-right: 25px;
     }
 
     .ready-status-text {
       display:flex;
       flex-direction: row;
       justify-content: flex-start;
-      justify-items: flex-start;
     }
+
     .captain-status {
     }
 
@@ -57,23 +62,21 @@
   </div>
 
   <div class="m-1" if.bind="!connectionFailed && !connecting && draftState">
-    <h6 if.bind="!isResults()">Draft '${draftState.setup.name}' on map ${draftState.setup.mapName}, Viewing as
-      <strong>${getDraftStateName()}</strong>
-      <a class="small" href.bind="getViewingLink()" if.bind="draftState" target="_blank">(Draft view link)</a>
-      <div if.bind="snapshot && snapshot.draftDone">
+    <div if.bind="!isResults()" class="status-text m-2">
+      Draft '${draftState.setup.name}' on map ${draftState.setup.mapName} - ${getDraftStateName()}
+      <a class="ml-2" href.bind="getViewingLink()" if.bind="draftState" target="_blank">(Draft view link)</a>
+
+      <div class="small-status ml-2">Admin: <strong class="ml-1">${snapshot.adminConnected ? 'connected' : 'disconnected'}</strong></div>
+      <div class="small-status ml-2">Red: <strong class="ml-1">${snapshot.redConnected ? 'connected' : 'disconnected'}</strong></div>
+      <div class="small-status ml-2">Blue: <strong class="ml-1">${snapshot.blueConnected ? 'connected' : 'disconnected'}</strong></div>
+
+      <div class="ml-2" if.bind="snapshot && snapshot.draftDone">
         <a href.bind="getReportLink()" target="_blank">Download Draft Report</a>
       </div>
-    </h6>
 
-    <!--
-    <div if.bind="false" class="status-text">
-      <div>Blue team name: <strong class="blue">${draftState.setup.blueName}</strong></div>
-      <div>Red team name: <strong class="red">${draftState.setup.redName}</strong></div>
-      <div>Admin connected: ${snapshot.adminConnected ? 'TRUE' : 'FALSE'}</div>
-      <div>Red connected: ${snapshot.redConnected ? 'TRUE' : 'FALSE'}</div>
-      <div>Blue connected: ${snapshot.blueConnected ? 'TRUE' : 'FALSE'}</div>
+
     </div>
-    -->
+
 
     <div if.bind="!isResults() && !snapshot.draftDone && !snapshot.draftStarted">
       <div class="ready-status-text m-1">
