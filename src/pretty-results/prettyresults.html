@@ -3,23 +3,23 @@
 
     <div class="picks">
       <div class="pick-column blue-pick">
-        <div class="image" css="background-image: url('${getBluePickImage(1)}')"></div>
-        <div class="image" css="background-image: url('${getBluePickImage(2)}')"></div>
-        <div class="image" css="background-image: url('${getBluePickImage(3)}')"></div>
+        <div class="image" css="background-image: url('${getBluePickImage(1)}')"><h2>${getBluePickName(1)}</h2></div>
+        <div class="image" css="background-image: url('${getBluePickImage(2)}')"><h2>${getBluePickName(2)}</h2></div>
+        <div class="image" css="background-image: url('${getBluePickImage(3)}')"><h2>${getBluePickName(3)}</h2></div>
       </div>
       <div class="match-title">${draftState.setup.name}</div>
       <div class="pick-column red-pick">
-        <div class="image" css="background-image: url('${getRedPickImage(1)}')"></div>
-        <div class="image" css="background-image: url('${getRedPickImage(2)}')"></div>
-        <div class="image" css="background-image: url('${getRedPickImage(3)}')"></div>
+        <div class="image" css="background-image: url('${getRedPickImage(1)}')"><h2>${getRedPickName(1)}</h2></div>
+        <div class="image" css="background-image: url('${getRedPickImage(2)}')"><h2>${getRedPickName(2)}</h2></div>
+        <div class="image" css="background-image: url('${getRedPickImage(3)}')"><h2>${getRedPickName(3)}</h2></div>
       </div>
     </div>
 
     <div class="ban-header">
       <div class="blue-bans-overlay">
         <div style="display: flex; flex-direction: row;">
-          <div class="ban-image" id="blue-ban1-overlay"></div>
-          <div class="ban-image" id="blue-ban2-overlay"></div>
+          <div class="ban-image" css="background-image: url('${getBlueBanImage(1)}')"><h2>${getBlueBanName(1)}</h2></div>
+          <div class="ban-image" css="background-image: url('${getBlueBanImage(2)}')"><h2>${getBlueBanName(2)}</h2></div>
         </div>
         <div class="blue-bg">
           <h2 id="blue-team-name">${draftState.setup.blueName}</h2>
@@ -30,8 +30,8 @@
 
       <div class="red-bans-overlay">
         <div style="display: flex; flex-direction: row;">
-          <div class="ban-image" id="red-ban1-overlay"></div>
-          <div class="ban-image" id="red-ban2-overlay"></div>
+          <div class="ban-image" css="background-image: url('${getRedBanImage(1)}')"><h2>${getRedBanName(1)}</h2></div>
+          <div class="ban-image" css="background-image: url('${getRedBanImage(2)}')"><h2>${getRedBanName(2)}</h2></div>
         </div>
         <div class="red-bg">
           <h2 id="red-team-name">${draftState.setup.redName}</h2>

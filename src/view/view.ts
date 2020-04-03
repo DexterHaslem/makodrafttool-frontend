@@ -13,6 +13,7 @@ import {
   WsMsgSnapshot,
   WsMsgTimerOnly
 } from "../models";
+import {prettyChampName} from "../util";
 
 
 @inject(Api)
@@ -218,12 +219,8 @@ export class View {
     if (!this.champions) {
       return champName;
     }
-    const champNameMatches = c => c.name === champName;
-    // fun fact: R.concat only concats first two arguments yeehaw
-    let allChampCategories = R.concat(this.champions.melee, this.champions.ranged);
-    allChampCategories = R.concat(allChampCategories, this.champions.support);
-    const found = R.find(champNameMatches, allChampCategories);
-    return found ? found.displayName : champName;
+
+    return prettyChampName(this.champions, champName);
   }
 
   private onWsMessage(msgEvent: MessageEvent) {

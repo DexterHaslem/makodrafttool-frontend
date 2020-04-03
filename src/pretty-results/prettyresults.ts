@@ -1,7 +1,17 @@
 import {inject} from 'aurelia-framework';
-import {Champions, DraftState, PhaseVote, WebsocketMessageType, WsMsgBase} from "../models";
+import {
+  Champion,
+  Champions,
+  DraftState,
+  PhaseType,
+  PhaseVote,
+  WebsocketMessageType,
+  WsMsgBase,
+  WsMsgSnapshot
+} from "../models";
 import {Api} from "../api";
 import './style.css';
+import {findChampByShortName} from "../util";
 
 
 @inject(Api)
@@ -11,56 +21,11 @@ export class Prettyresults {
   private champions: Champions;
   private draftState: DraftState;
   private ws: WebSocket;
-
-  banOverlayStyle: any;
-  imageStyle: any;
-
-  /* note: binding images is a huge pain in the ass thanks to webpack. everything that
-  isnt statically referenced from css (the placeholder) is put in static and a simple
-  url() bind is used.
-   */
-
-  getBluePickImage(num : number) {
-    return 'champions/Rook.jpg';
-  }
-
-  getRedPickImage(num : number) {
-
-  }
-
-  getBlueBanImage(num : number) {
-
-  }
-
-  getRedBanImage(num :number) {
-
-  }
+  private votes: PhaseVote[];
 
   constructor(api: Api) {
     this.api = api;
-
-    /* .pick-ban-overlay. make bound so we can dynamically change bg */
-    this.banOverlayStyle = {
-      height: '100%',
-      width: '100%',
-      'background-color': 'black',
-      'background-size': 'cover',
-      'background-position': 'center',
-      'display': 'flex',
-      'flex-direction': 'column',
-      'transition': 'all 0.1s linear'
-    };
-
-    this.imageStyle = {
-      position: 'relative',
-      'margin-left': 'auto',
-      'margin-right': 'auto',
-      'background-position': 'center',
-      'background-repeat': 'no-repeat',
-      'background-size': '80%',
-      'height': 0,
-      'transition': 'all 0.1s linear',
-    }
+    this.draftState = null;
   }
 
   activate(params, route) {
@@ -72,7 +37,8 @@ export class Prettyresults {
       // get draft state after champions so that we can always resolve champ names
       this.api.getDraftState(this.draftCode).then(st => {
         this.draftState = st;
-        this.banOverlayStyle['background-image'] = `url('maps/${this.draftState.setup.mapName}.png')`;
+        this.votes = this.draftState && this.draftState.phases ? this.draftState.phases : [];
+        this.update(false);
       });
     });
 
@@ -80,14 +46,116 @@ export class Prettyresults {
     this.ws.onmessage = this.onWsMessage.bind(this);
   }
 
-  private onWsMessage(msgEvent: MessageEvent) {
-    let mb: WsMsgBase = JSON.parse(msgEvent.data);
-    if (mb.msgType == WebsocketMessageType.snapshot) {
+  /* note: binding images is a huge pain in the ass thanks to webpack. everything that
+  isnt statically referenced from css (the placeholder) is put in static and a simple
+  url() bind is used.
+   */
 
+  // all vote nums come from UI 1 indexed
+
+  private getVoteForIdx(voteNum : number, isBan : boolean) : PhaseVote | null {
+    if (!this.votes) {
+      return null;
+    }
+
+    let num  = 1;
+    let foundVote = null;
+    this.votes.forEach(v => {
+      if (foundVote != null) {
+        return;
+      }
+
+      if ((isBan && v.phaseType === PhaseType.ban) || (!isBan && v.phaseType === PhaseType.pick)) {
+        if (num == voteNum) {
+          foundVote = v;
+        }
+        num++;
+      }
+    });
+    return foundVote;
+  }
+
+  private getChampForVote(isBlue : boolean, isBan: boolean, voteNum : number) : Champion | null {
+    const v = this.getVoteForIdx(voteNum, isBan);
+    if (v === null) {
+      return null;
+    }
+
+    const tryChamp = findChampByShortName(this.champions, isBlue ? v.voteBlueValue : v.voteRedValue);
+    // note: rambda undefine bubbles up, make sure to coescl to null
+    return tryChamp || null;
+  }
+
+  private getImage(isBlue : boolean, isBan: boolean, voteNum : number) {
+    const champ = this.getChampForVote(isBlue, isBan, voteNum);
+    if (!champ) {
+      return 'champions/placeholder.jpg';
+    }
+
+    return `champions/${champ.displayName}.jpg`;
+  }
+
+  private getName(isBlue : boolean, isBan: boolean, voteNum : number) {
+    const champ = this.getChampForVote(isBlue, isBan, voteNum);
+    if (champ === null) {
+      return '';
+    }
+
+    return champ.displayName;
+  }
+
+  getBluePickImage(num : number) {
+    return this.getImage(true, false, num);
+  }
+
+  getRedPickImage(num : number) {
+    return this.getImage(false, false, num);
+  }
+
+  getBlueBanImage(num : number) {
+    return this.getImage(true, true, num);
+  }
+
+  getRedBanImage(num :number) {
+    return this.getImage(false, true, num);
+  }
+
+  getBluePickName(num :number) {
+    return this.getName(true, false, num);
+  }
+
+  getRedPickName(num :number) {
+    return this.getName( false, false, num);
+  }
+
+  getBlueBanName(num : number) {
+    return this.getName(true, true, num);
+  }
+
+  getRedBanName(num : number) {
+    return this.getName(false, true, num);
+  }
+
+  private onWsMessage(msgEvent: MessageEvent) {
+    const mb: WsMsgBase = JSON.parse(msgEvent.data);
+
+    // dont bother if we get a few w/s messages before draftstate is in
+    if (this.draftState === null) {
+      return;
+    }
+
+    if (mb.msgType == WebsocketMessageType.snapshot) {
+      const ss: WsMsgSnapshot = <WsMsgSnapshot>mb;
+      if (ss.phases) {
+        this.votes = ss.phases;
+        this.update(true);
+      }
     }
   }
 
-  private updateFrom(phases : PhaseVote[]) {
+  private update(fromWs : boolean) {
+    console.log(`update: fromWs=${fromWs} votes=`, this.votes);
+
 
   }
 }
