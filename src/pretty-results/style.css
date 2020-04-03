@@ -1,0 +1,137 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.pick-ban-overlay {
+  height: 100%;
+  width: 100%;
+  background-color: black;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.1s linear;
+}
+
+.match-title {
+  display: flex;
+  height: 100%;
+  width: 40%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.match-title h1 {
+  font-size: 6vw;
+}
+
+.picks,
+.ban-header {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  border: 0;
+}
+
+.picks {
+  justify-content: space-between;
+}
+
+.pick-column {
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+}
+
+.blue-bans-overlay,
+.red-bans-overlay {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+}
+
+.red-bans-overlay {
+  text-align: right;
+}
+
+.map-name-overlay {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: flex-end;
+  width: 20%;
+}
+
+.image,
+.ban-image {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 80%;
+  height: 0;
+  transition: all 0.1s linear;
+}
+
+.image h2,
+.ban-image h2 {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  padding: 0;
+}
+
+.blue-pick h2 {
+  background: linear-gradient(45deg, black, transparent);
+}
+
+.red-pick h2 {
+  background: linear-gradient(315deg, black, transparent);
+}
+
+.image {
+  width: 100%;
+  padding-top: 54.79%;
+  background-image: url('champions/placeholder.jpg');
+}
+
+.ban-image {
+  background-image: linear-gradient(transparent 10%, black 11%, black 89%, transparent 90%), url("champions/placeholder.jpg");
+  background-blend-mode: saturation;
+  width: 40%;
+  padding-top: 21.92%;
+}
+
+.ban-image h2 {
+  transform: rotate(-10deg);
+  background: linear-gradient(45deg, transparent, red, transparent);
+}
+
+.blue-bg {
+  background: linear-gradient(90deg, #1d307a 0%, #1d307a 60%, rgba(0, 0, 0, 0) 100%);
+}
+
+.red-bg {
+  background-color: #7a1d1d;
+  background: linear-gradient(270deg, #7a1d1d 0%, #7a1d1d 60%, rgba(0, 0, 0, 0) 100%);
+}
+
+h1 {
+  font-family: "Impact", "Charcoal", sans-serif;
+  font-size: 3vw;
+  color: white;
+}
+
+h2 {
+  font-family: "Impact", "Charcoal", sans-serif;
+  font-size: 2vw;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: white;
+}

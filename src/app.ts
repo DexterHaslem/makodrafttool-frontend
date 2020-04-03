@@ -16,6 +16,7 @@ export class App {
         title: "Create",
       },
       {route: 'v/:id/', name: 'view', moduleId: PLATFORM.moduleName('view/view'), title: "View"},
+      {route: 'r/:id/', name: 'results', moduleId: PLATFORM.moduleName('pretty-results/prettyresults'), title: "Results"},
     ]);
   }
 }

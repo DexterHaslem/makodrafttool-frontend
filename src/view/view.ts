@@ -45,10 +45,6 @@ export class View {
     this.api = api;
     this.connecting = true;
     this.selectedVoteValue = 'none';
-    this.api.getChampions().then(c => {
-      this.champions = c;
-      this.validChampions = R.clone(c);
-    });
 
     // enable by default incase they refresh
     this.lockinEnabled = true;
@@ -57,7 +53,13 @@ export class View {
   activate(params, route) {
     this.draftCode = params.id;
 
-    this.api.getDraftState(this.draftCode).then(st => this.draftState = st);
+    this.api.getChampions().then(c => {
+      this.champions = c;
+      this.validChampions = R.clone(c);
+    }).then(() => {
+      // get draft state after champions so that we can always resolve champ names
+      this.api.getDraftState(this.draftCode).then(st => this.draftState = st);
+    });
 
     this.ws = this.api.getWs(this.draftCode);
     this.ws.onopen = this.onWsOpen.bind(this);

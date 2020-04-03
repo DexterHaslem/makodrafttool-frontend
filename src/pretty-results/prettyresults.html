@@ -1,0 +1,44 @@
+<template>
+  <div if.bind="draftState" class="pick-ban-overlay"  css="background-image: url('maps/${draftState.setup.mapName}.png'">
+
+    <div class="picks">
+      <div class="pick-column blue-pick">
+        <div class="image" css="background-image: url('${getBluePickImage(1)}')"></div>
+        <div class="image" css="background-image: url('${getBluePickImage(2)}')"></div>
+        <div class="image" css="background-image: url('${getBluePickImage(3)}')"></div>
+      </div>
+      <div class="match-title">${draftState.setup.name}</div>
+      <div class="pick-column red-pick">
+        <div class="image" css="background-image: url('${getRedPickImage(1)}')"></div>
+        <div class="image" css="background-image: url('${getRedPickImage(2)}')"></div>
+        <div class="image" css="background-image: url('${getRedPickImage(3)}')"></div>
+      </div>
+    </div>
+
+    <div class="ban-header">
+      <div class="blue-bans-overlay">
+        <div style="display: flex; flex-direction: row;">
+          <div class="ban-image" id="blue-ban1-overlay"></div>
+          <div class="ban-image" id="blue-ban2-overlay"></div>
+        </div>
+        <div class="blue-bg">
+          <h2 id="blue-team-name">${draftState.setup.blueName}</h2>
+        </div>
+      </div>
+
+      <h1 id="map-name-overlay" class="map-name-overlay">${draftState.setup.mapName}</h1>
+
+      <div class="red-bans-overlay">
+        <div style="display: flex; flex-direction: row;">
+          <div class="ban-image" id="red-ban1-overlay"></div>
+          <div class="ban-image" id="red-ban2-overlay"></div>
+        </div>
+        <div class="red-bg">
+          <h2 id="red-team-name">${draftState.setup.redName}</h2>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</template>
